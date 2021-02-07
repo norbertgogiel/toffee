@@ -5,21 +5,21 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class IntervalScheduledTaskAgent {
 
-    private ScheduledThreadPoolExecutor executor;
+    private ScheduledThreadPoolExecutor taskAgent;
 
     public IntervalScheduledTaskAgent(int corePoolSize) {
-        executor = new ScheduledThreadPoolExecutor(corePoolSize);
+        taskAgent = new ScheduledThreadPoolExecutor(corePoolSize);
     }
 
     public int getCorePoolSize() {
-        return executor.getCorePoolSize();
+        return taskAgent.getCorePoolSize();
     }
 
     public int getCurrentPoolSize() {
-        return executor.getPoolSize();
+        return taskAgent.getPoolSize();
     }
 
     public int getCurrentTaskCount() {
-        return executor.getActiveCount();
+        return taskAgent.getActiveCount();
     }
 }
