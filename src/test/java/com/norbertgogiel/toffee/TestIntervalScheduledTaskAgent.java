@@ -23,4 +23,10 @@ public class TestIntervalScheduledTaskAgent {
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);
         assertEquals(0, subject.getCurrentPoolSize());
     }
+
+    @Test
+    public void testCurrentTasksCount() {
+        IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);
+        assertEquals(0, subject.getCurrentTaskCount());
+    }
 }

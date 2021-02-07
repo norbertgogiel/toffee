@@ -18,4 +18,8 @@ public class IntervalScheduledTaskAgent {
     public int getCurrentPoolSize() {
         return executor.getPoolSize();
     }
+
+    public int getCurrentTaskCount() {
+        return executor.getActiveCount();
+    }
 }
