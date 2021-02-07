@@ -10,4 +10,16 @@ public class IntervalScheduledTaskAgent {
     public IntervalScheduledTaskAgent(int corePoolSize) {
         executor = new ScheduledThreadPoolExecutor(corePoolSize);
     }
+
+    public int getCorePoolSize() {
+        return executor.getCorePoolSize();
+    }
+
+    public int getCurrentPoolSize() {
+        return executor.getPoolSize();
+    }
+
+    public int getCurrentTaskCount() {
+        return executor.getActiveCount();
+    }
 }
