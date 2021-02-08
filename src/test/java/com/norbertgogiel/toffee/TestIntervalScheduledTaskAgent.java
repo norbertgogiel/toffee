@@ -37,8 +37,17 @@ public class TestIntervalScheduledTaskAgent {
     public void testScheduleTask() throws InterruptedException {
         AtomicInteger atomicInteger = new AtomicInteger();
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);
-        subject.submit(atomicInteger::getAndIncrement, 0, 100, TimeUnit.MILLISECONDS);
+        subject.submit(atomicInteger::getAndIncrement, 0, 100, 1000, TimeUnit.MILLISECONDS);
         Thread.sleep(350);
         assertEquals(4, atomicInteger.get());
+    }
+
+    @Test
+    public void testIntervalScheduleTask() throws InterruptedException {
+        AtomicInteger atomicInteger = new AtomicInteger();
+        IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(1);
+        subject.submit(atomicInteger::getAndIncrement, 0, 100,150, TimeUnit.MILLISECONDS);
+        Thread.sleep(350);
+        assertEquals(2, atomicInteger.get());
     }
 }
