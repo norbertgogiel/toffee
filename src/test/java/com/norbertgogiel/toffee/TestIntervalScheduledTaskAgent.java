@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
 
+import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,5 +50,26 @@ public class TestIntervalScheduledTaskAgent {
         subject.submit(atomicInteger::getAndIncrement, 0, 100,150, TimeUnit.MILLISECONDS);
         Thread.sleep(350);
         assertEquals(2, atomicInteger.get());
+    }
+
+    @Test
+    public void testTimeScheduledTask() throws InterruptedException {
+        AtomicInteger atomicInteger = new AtomicInteger();
+        IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(1);
+        LocalTime localTimeNow = LocalTime.now();
+        subject.submit(
+                atomicInteger::getAndIncrement,
+                100,
+                TimeUnit.MILLISECONDS,
+                localTimeNow.getHour(),
+                localTimeNow.getMinute(),
+                localTimeNow.getSecond() + 1,
+                localTimeNow.getNano(),
+                localTimeNow.getHour(),
+                localTimeNow.getMinute(),
+                localTimeNow.getSecond() + 2,
+                localTimeNow.getNano() - 5);
+        Thread.sleep(3000);
+        assertEquals(10, atomicInteger.get());
     }
 }
