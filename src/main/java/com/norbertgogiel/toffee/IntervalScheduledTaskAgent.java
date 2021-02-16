@@ -41,30 +41,10 @@ public class IntervalScheduledTaskAgent {
     public void submit(Runnable runnable,
                        long period,
                        TimeUnit timeUnit,
-                       int startHour,
-                       int startMinute,
-                       int startSecond,
-                       int startNano,
-                       int endHour,
-                       int endMinute,
-                       int endSecond,
-                       int endNano) {
-        long startDelay = Duration.between(
-                LocalTime.now(),
-                LocalTime.of(
-                        startHour,
-                        startMinute,
-                        startSecond,
-                        startNano)
-        ).toMillis();
-        long endDelay = Duration.between(
-                LocalTime.now(),
-                LocalTime.of(
-                        endHour,
-                        endMinute,
-                        endSecond,
-                        endNano)
-        ).toMillis();
+                       LocalTime startTime,
+                       LocalTime endTime) {
+        long startDelay = Duration.between(LocalTime.now(), startTime).toMillis();
+        long endDelay = Duration.between(LocalTime.now(), endTime).toMillis();
         Future<?> future =  taskAgent.scheduleAtFixedRate(runnable, startDelay, period, timeUnit);
         shutdownAgent.schedule(() -> future.cancel(false), endDelay, timeUnit);
     }

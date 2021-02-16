@@ -57,18 +57,23 @@ public class TestIntervalScheduledTaskAgent {
         AtomicInteger atomicInteger = new AtomicInteger();
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(1);
         LocalTime localTimeNow = LocalTime.now();
+        LocalTime startTime = LocalTime.of(
+                localTimeNow.getHour(),
+                localTimeNow.getMinute(),
+                localTimeNow.getSecond() + 1,
+                localTimeNow.getNano());
+        LocalTime endTime = LocalTime.of(
+                localTimeNow.getHour(),
+                localTimeNow.getMinute(),
+                localTimeNow.getSecond() + 2,
+                localTimeNow.getNano() - 100
+        );
         subject.submit(
                 atomicInteger::getAndIncrement,
                 100,
                 TimeUnit.MILLISECONDS,
-                localTimeNow.getHour(),
-                localTimeNow.getMinute(),
-                localTimeNow.getSecond() + 1,
-                localTimeNow.getNano(),
-                localTimeNow.getHour(),
-                localTimeNow.getMinute(),
-                localTimeNow.getSecond() + 2,
-                localTimeNow.getNano() - 5);
+                startTime,
+                endTime);
         Thread.sleep(3000);
         assertEquals(10, atomicInteger.get());
     }
