@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class IntervalScheduledTaskAgent {
+class IntervalScheduledTaskAgent {
 
     private ScheduledThreadPoolExecutor taskAgent;
     private ScheduledThreadPoolExecutor shutdownAgent;

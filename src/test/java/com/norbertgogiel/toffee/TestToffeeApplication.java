@@ -32,30 +32,30 @@ public class TestToffeeApplication {
     @Test
     public void testInitIntervalScheduledAnnotatedClass() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertDoesNotThrow(() -> subject.init(IntervalScheduledClassTest.class));
+        assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClass.class));
     }
 
     @Test
-    public void testInitScheduledAnnotatedClassAndMethods() {
+    public void testInitScheduledAnnotatedClassAndMethodWithAnnotatedFullTime() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertThrows(UnsupportedOperationException.class ,() -> subject.init(IntervalScheduledClassAndMethodsTest.class));
+        assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClassAndMethodWithAnnotatedFullTime.class));
     }
 
     @IntervalScheduled
-    static class IntervalScheduledClassTest {
+    static class IntervalScheduledTestClass {
 
-        public void testRunnable() throws IOException {
+        public Runnable testRunnable() throws IOException {
             throw new IOException("evil");
         }
     }
 
     @IntervalScheduled
-    static class IntervalScheduledClassAndMethodsTest {
+    static class IntervalScheduledTestClassAndMethodWithAnnotatedFullTime {
 
         @ScheduledFrom(hour = 11, minute = 12, second = 13, nano = 14)
         @ScheduledUntil(hour = 12, minute = 13, second = 14, nano = 15)
-        public void testRunnable() throws IOException {
-            throw new IOException("evil");
+        public Runnable testRunnable() throws IOException {
+            return () -> System.out.println("I am a teapot");
         }
     }
 }
