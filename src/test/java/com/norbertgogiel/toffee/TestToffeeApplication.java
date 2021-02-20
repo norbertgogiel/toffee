@@ -1,6 +1,7 @@
 package com.norbertgogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.norbertgogiel.toffee.annotations.IntervalScheduled;
@@ -9,8 +10,11 @@ import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestToffeeApplication {
+
+    private AtomicInteger counter;
 
     @Test
     public void testDefaultConstructor() {
@@ -27,6 +31,24 @@ public class TestToffeeApplication {
     public void testInitNullObjectAndThrows() {
         ToffeeApplication subject = new ToffeeApplication();
         assertThrows(IllegalArgumentException.class, () -> subject.init(null));
+    }
+
+    @Test
+    public void testGetTotalCorePoolSize() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertEquals(0, subject.getTotalCorePoolSize());
+    }
+
+    @Test
+    public void testGetTotalCurrentPoolSize() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertEquals(0, subject.getTotalCurrentPoolSize());
+    }
+
+    @Test
+    public void testGetTotalCurrentTaskCount() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertEquals(0, subject.getTotalCurrentTaskCount());
     }
 
     @Test

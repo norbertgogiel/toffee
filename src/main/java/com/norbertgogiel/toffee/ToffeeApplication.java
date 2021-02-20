@@ -7,10 +7,14 @@ import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ToffeeApplication {
+
+    private List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
 
     public void init(Class<?> source) {
         assertNotNull(source);
@@ -25,6 +29,18 @@ public class ToffeeApplication {
         }
     }
 
+    public int getTotalCorePoolSize() {
+        return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum();
+    }
+
+    public int getTotalCurrentPoolSize() {
+        return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
+    }
+
+    public int getTotalCurrentTaskCount() {
+        return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentTaskCount).sum();
+    }
+
     private static void assertNotNull(Object object) {
         if (object == null) {
             throw new IllegalArgumentException("Object must not be null");
@@ -33,6 +49,7 @@ public class ToffeeApplication {
 
     private void scheduleTask(Class<?> source, Method method) {
         IntervalScheduledTaskAgent agent = new IntervalScheduledTaskAgent(1);
+        registeredAgents.add(agent);
         ScheduledFrom scheduledFrom = method.getDeclaredAnnotation(ScheduledFrom.class);
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
         LocalTime scheduledFromLocalTime = LocalTime.of(
