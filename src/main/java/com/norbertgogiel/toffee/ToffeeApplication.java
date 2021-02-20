@@ -5,7 +5,6 @@ import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,12 +61,18 @@ public class ToffeeApplication {
                 scheduledUntil.minute(),
                 scheduledUntil.second(),
                 scheduledUntil.nano());
+        long initDelay = LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay();
+        long delayToShutdown = LocalTime.now().toSecondOfDay() - scheduledUntilLocalTime.toSecondOfDay();
+        if (LocalTime.now().compareTo(scheduledFromLocalTime) > 0) {
+            initDelay = (24 * 60 * 60) - initDelay;
+            delayToShutdown = (24 * 60 * 60) - delayToShutdown;
+        }
         try {
             Runnable runnable = (Runnable) method.invoke(source.newInstance());
             agent.submit(runnable,
-                    Duration.between(LocalTime.now(), scheduledFromLocalTime).toMillis(),
+                    initDelay,
                     1,
-                    Duration.between(LocalTime.now(), scheduledUntilLocalTime).toMillis(),
+                    delayToShutdown,
                     TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create a legal runnable", e);

@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestToffeeApplication {
 
-    private AtomicInteger counter;
+    private static AtomicInteger counter;
 
     @Test
     public void testDefaultConstructor() {
@@ -60,7 +60,12 @@ public class TestToffeeApplication {
     @Test
     public void testInitScheduledAnnotatedClassAndMethodWithAnnotatedFullTime() {
         ToffeeApplication subject = new ToffeeApplication();
+        counter = new AtomicInteger(0);
         assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClassAndMethodWithAnnotatedFullTime.class));
+        assertEquals(1, subject.getTotalCorePoolSize());
+        assertEquals(1, subject.getTotalCurrentPoolSize());
+        assertEquals(0, subject.getTotalCurrentTaskCount());
+        assertEquals(0, counter.get());
     }
 
     @IntervalScheduled
@@ -77,7 +82,7 @@ public class TestToffeeApplication {
         @ScheduledFrom(hour = 11, minute = 12, second = 13, nano = 14)
         @ScheduledUntil(hour = 12, minute = 13, second = 14, nano = 15)
         public Runnable testRunnable() throws IOException {
-            return () -> System.out.println("I am a teapot");
+            return counter::getAndIncrement;
         }
     }
 }
