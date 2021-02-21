@@ -17,15 +17,7 @@ public class ToffeeApplication {
 
     public void init(Class<?> source) {
         assertNotNull(source);
-        if (source.isAnnotationPresent(IntervalScheduled.class)) {
-            Arrays.stream(source.getMethods())
-                    .forEach(method -> {
-                        if (method.isAnnotationPresent(ScheduledFrom.class)
-                        && method.isAnnotationPresent(ScheduledUntil.class)
-                        && method.getReturnType() == Runnable.class)
-                                scheduleTask(source, method);
-            });
-        }
+        processSource(source);
     }
 
     public int getTotalCorePoolSize() {
@@ -46,9 +38,23 @@ public class ToffeeApplication {
         }
     }
 
+    private void processSource(Class<?> source) {
+        if (source.isAnnotationPresent(IntervalScheduled.class)) {
+            Arrays.stream(source.getMethods())
+                    .forEach(method -> {
+                        if (isMethodAValidSchedule(method))
+                            scheduleTask(source, method);
+                    });
+        }
+    }
+
+    private boolean isMethodAValidSchedule(Method method) {
+        return method.isAnnotationPresent(ScheduledFrom.class)
+                && method.isAnnotationPresent(ScheduledUntil.class)
+                && method.getReturnType() == Runnable.class;
+    }
+
     private void scheduleTask(Class<?> source, Method method) {
-        IntervalScheduledTaskAgent agent = new IntervalScheduledTaskAgent(1);
-        registeredAgents.add(agent);
         ScheduledFrom scheduledFrom = method.getDeclaredAnnotation(ScheduledFrom.class);
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
         LocalTime scheduledFromLocalTime = LocalTime.of(
@@ -67,13 +73,15 @@ public class ToffeeApplication {
             initDelay = (24 * 60 * 60) - initDelay;
             delayToShutdown = (24 * 60 * 60) - delayToShutdown;
         }
+        tryToSchedule(source, method, initDelay, delayToShutdown);
+    }
+
+    private void tryToSchedule(Class<?> source, Method method, long initDelay, long delayToShutdown) {
+        IntervalScheduledTaskAgent agent = new IntervalScheduledTaskAgent(1);
+        registeredAgents.add(agent);
         try {
             Runnable runnable = (Runnable) method.invoke(source.newInstance());
-            agent.submit(runnable,
-                    initDelay,
-                    1,
-                    delayToShutdown,
-                    TimeUnit.MILLISECONDS);
+            agent.submit(runnable, initDelay, 1, delayToShutdown, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create a legal runnable", e);
         }
