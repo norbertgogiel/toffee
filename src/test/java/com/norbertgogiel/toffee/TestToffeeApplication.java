@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.norbertgogiel.toffee.annotations.IntervalScheduled;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import org.junit.Test;
@@ -53,16 +52,16 @@ public class TestToffeeApplication {
     }
 
     @Test
-    public void testInitIntervalScheduledAnnotatedClass() {
+    public void testInitIntervalScheduledNonNullClassWithMethod() {
         ToffeeApplication subject = new ToffeeApplication();
         assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClass.class));
     }
 
     @Test
-    public void testInitScheduledAnnotatedClassAndMethodWithAnnotatedFullTime() {
+    public void testInitScheduledMethodWithAnnotatedFullTime() {
         ToffeeApplication subject = new ToffeeApplication();
         counter = new AtomicInteger(0);
-        assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClassAndMethodWithAnnotatedFullTime.class));
+        assertDoesNotThrow(() -> subject.init(ScheduledMethodWithAnnotatedFullTime.class));
         assertEquals(1, subject.getTotalCorePoolSize());
         assertEquals(1, subject.getTotalCurrentPoolSize());
         assertEquals(0, subject.getTotalCurrentTaskCount());
@@ -70,30 +69,40 @@ public class TestToffeeApplication {
     }
 
     @Test
-    public void testInitAnnotatedClassAndMethodWithIncorrectTime() {
+    public void testInitTwoScheduledMethods() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodIncorrectlyAnnotated.class));
+        counter = new AtomicInteger(0);
+        assertDoesNotThrow(() -> subject.init(TwoScheduledMethodsWithAnnotatedFullTime.class));
+        assertEquals(2, subject.getTotalCorePoolSize());
+        assertEquals(2, subject.getTotalCurrentPoolSize());
+        assertEquals(0, subject.getTotalCurrentTaskCount());
+        assertEquals(0, counter.get());
     }
 
     @Test
-    public void testInitAnnotatedClassAndMethodWithHourOutOfRange() {
+    public void testInitAnnotatedMethodWithIncorrectTime() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithHourOutOfRange.class));
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(ScheduledMethodIncorrectlyAnnotated.class));
     }
 
     @Test
-    public void testInitAnnotatedClassAndMethodWithMinuteOutOfRange() {
+    public void testInitAnnotatedMethodWithHourOutOfRange() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithMinuteOutOfRange.class));
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(ScheduledMethodAnnotatedWithHourOutOfRange.class));
     }
 
     @Test
-    public void testInitAnnotatedClassAndMethodWithSecondOutOfRange() {
+    public void testInitAnnotatedMethodWithMinuteOutOfRange() {
         ToffeeApplication subject = new ToffeeApplication();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithSecondOutOfRange.class));
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(ScheduledMethodAnnotatedWithMinuteOutOfRange.class));
     }
 
-    @IntervalScheduled
+    @Test
+    public void testInitAnnotatedMethodWithSecondOutOfRange() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(ScheduledMethodAnnotatedWithSecondOutOfRange.class));
+    }
+
     static class IntervalScheduledTestClass {
 
         public Runnable testRunnable() throws IOException {
@@ -101,8 +110,7 @@ public class TestToffeeApplication {
         }
     }
 
-    @IntervalScheduled
-    static class IntervalScheduledTestClassAndMethodWithAnnotatedFullTime {
+    static class ScheduledMethodWithAnnotatedFullTime {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
@@ -111,8 +119,22 @@ public class TestToffeeApplication {
         }
     }
 
-    @IntervalScheduled
-    static class IntervalScheduledTestClassAndMethodIncorrectlyAnnotated {
+    static class TwoScheduledMethodsWithAnnotatedFullTime {
+
+        @ScheduledFrom(time = "01:11:22")
+        @ScheduledUntil(time = "02:11:22")
+        public Runnable testRunnableOne() throws IOException {
+            return counter::getAndIncrement;
+        }
+
+        @ScheduledFrom(time = "01:11:22")
+        @ScheduledUntil(time = "02:11:22")
+        public Runnable testRunnableTwo() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    static class ScheduledMethodIncorrectlyAnnotated {
 
         @ScheduledFrom(time = "01")
         @ScheduledUntil(time = "02:11:22")
@@ -121,8 +143,7 @@ public class TestToffeeApplication {
         }
     }
 
-    @IntervalScheduled
-    static class IntervalScheduledTestClassAndMethodAnnotatedWithHourOutOfRange {
+    static class ScheduledMethodAnnotatedWithHourOutOfRange {
 
         @ScheduledFrom(time = "24:11:22")
         @ScheduledUntil(time = "02:11:22")
@@ -131,8 +152,7 @@ public class TestToffeeApplication {
         }
     }
 
-    @IntervalScheduled
-    static class IntervalScheduledTestClassAndMethodAnnotatedWithMinuteOutOfRange {
+    static class ScheduledMethodAnnotatedWithMinuteOutOfRange {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:60:22")
@@ -141,8 +161,7 @@ public class TestToffeeApplication {
         }
     }
 
-    @IntervalScheduled
-    static class IntervalScheduledTestClassAndMethodAnnotatedWithSecondOutOfRange {
+    static class ScheduledMethodAnnotatedWithSecondOutOfRange {
 
         @ScheduledFrom(time = "01:11:60")
         @ScheduledUntil(time = "24:11:22")

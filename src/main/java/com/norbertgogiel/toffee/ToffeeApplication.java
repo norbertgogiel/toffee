@@ -1,6 +1,5 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.IntervalScheduled;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
@@ -8,9 +7,6 @@ import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.IllegalFormatCodePointException;
-import java.util.IllegalFormatConversionException;
-import java.util.IllegalFormatException;
 import java.util.IllegalFormatPrecisionException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,13 +39,11 @@ public class ToffeeApplication {
     }
 
     private void processSource(Class<?> source) {
-        if (source.isAnnotationPresent(IntervalScheduled.class)) {
-            Arrays.stream(source.getMethods())
-                    .forEach(method -> {
-                        if (isMethodAValidSchedule(method))
-                            scheduleTask(source, method);
-                    });
-        }
+        Arrays.stream(source.getMethods())
+                .forEach(method -> {
+                    if (isMethodAValidSchedule(method))
+                        scheduleTask(source, method);
+                });
     }
 
     private boolean isMethodAValidSchedule(Method method) {
