@@ -1,6 +1,5 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.IntervalScheduled;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
@@ -8,6 +7,7 @@ import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IllegalFormatPrecisionException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,13 +39,11 @@ public class ToffeeApplication {
     }
 
     private void processSource(Class<?> source) {
-        if (source.isAnnotationPresent(IntervalScheduled.class)) {
-            Arrays.stream(source.getMethods())
-                    .forEach(method -> {
-                        if (isMethodAValidSchedule(method))
-                            scheduleTask(source, method);
-                    });
-        }
+        Arrays.stream(source.getMethods())
+                .forEach(method -> {
+                    if (isMethodAValidSchedule(method))
+                        scheduleTask(source, method);
+                });
     }
 
     private boolean isMethodAValidSchedule(Method method) {
@@ -57,16 +55,8 @@ public class ToffeeApplication {
     private void scheduleTask(Class<?> source, Method method) {
         ScheduledFrom scheduledFrom = method.getDeclaredAnnotation(ScheduledFrom.class);
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
-        LocalTime scheduledFromLocalTime = LocalTime.of(
-                scheduledFrom.hour(),
-                scheduledFrom.minute(),
-                scheduledFrom.second(),
-                scheduledFrom.nano());
-        LocalTime scheduledUntilLocalTime = LocalTime.of(
-                scheduledUntil.hour(),
-                scheduledUntil.minute(),
-                scheduledUntil.second(),
-                scheduledUntil.nano());
+        LocalTime scheduledFromLocalTime = validateAndParse(scheduledFrom.time());
+        LocalTime scheduledUntilLocalTime = validateAndParse(scheduledUntil.time());
         long initDelay = LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay();
         long delayToShutdown = LocalTime.now().toSecondOfDay() - scheduledUntilLocalTime.toSecondOfDay();
         if (LocalTime.now().compareTo(scheduledFromLocalTime) > 0) {
@@ -74,6 +64,26 @@ public class ToffeeApplication {
             delayToShutdown = (24 * 60 * 60) - delayToShutdown;
         }
         tryToSchedule(source, method, initDelay, delayToShutdown);
+    }
+
+    private LocalTime validateAndParse(String time) {
+        String[] timeArr = time.split(":");
+        if (timeArr.length != 3) {
+            throw new IllegalFormatPrecisionException(timeArr.length);
+        }
+        int hour = Integer.parseInt(timeArr[0]);
+        int minute = Integer.parseInt(timeArr[1]);
+        int second = Integer.parseInt(timeArr[2]);
+        if (hour < 0 || hour > 23) {
+            throw new IllegalFormatPrecisionException(hour);
+        }
+        if (minute < 0 || minute > 59) {
+            throw new IllegalFormatPrecisionException(minute);
+        }
+        if (second < 0 || second > 59) {
+            throw new IllegalFormatPrecisionException(second);
+        }
+        return LocalTime.of(hour, minute, second);
     }
 
     private void tryToSchedule(Class<?> source, Method method, long initDelay, long delayToShutdown) {

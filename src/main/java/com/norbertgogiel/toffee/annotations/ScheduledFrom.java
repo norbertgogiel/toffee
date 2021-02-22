@@ -9,8 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScheduledFrom {
 
-    int hour();
-    int minute() default 0;
-    int second() default 0;
-    int nano() default 0;
+    String time() default "";
 }
