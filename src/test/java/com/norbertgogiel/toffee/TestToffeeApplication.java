@@ -10,6 +10,7 @@ import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.IllegalFormatPrecisionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestToffeeApplication {
@@ -68,6 +69,30 @@ public class TestToffeeApplication {
         assertEquals(0, counter.get());
     }
 
+    @Test
+    public void testInitAnnotatedClassAndMethodWithIncorrectTime() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodIncorrectlyAnnotated.class));
+    }
+
+    @Test
+    public void testInitAnnotatedClassAndMethodWithHourOutOfRange() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithHourOutOfRange.class));
+    }
+
+    @Test
+    public void testInitAnnotatedClassAndMethodWithMinuteOutOfRange() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithMinuteOutOfRange.class));
+    }
+
+    @Test
+    public void testInitAnnotatedClassAndMethodWithSecondOutOfRange() {
+        ToffeeApplication subject = new ToffeeApplication();
+        assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(IntervalScheduledTestClassAndMethodAnnotatedWithSecondOutOfRange.class));
+    }
+
     @IntervalScheduled
     static class IntervalScheduledTestClass {
 
@@ -79,8 +104,48 @@ public class TestToffeeApplication {
     @IntervalScheduled
     static class IntervalScheduledTestClassAndMethodWithAnnotatedFullTime {
 
-        @ScheduledFrom(hour = 11, minute = 12, second = 13, nano = 14)
-        @ScheduledUntil(hour = 12, minute = 13, second = 14, nano = 15)
+        @ScheduledFrom(time = "01:11:22")
+        @ScheduledUntil(time = "02:11:22")
+        public Runnable testRunnable() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    @IntervalScheduled
+    static class IntervalScheduledTestClassAndMethodIncorrectlyAnnotated {
+
+        @ScheduledFrom(time = "01")
+        @ScheduledUntil(time = "02:11:22")
+        public Runnable testRunnable() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    @IntervalScheduled
+    static class IntervalScheduledTestClassAndMethodAnnotatedWithHourOutOfRange {
+
+        @ScheduledFrom(time = "24:11:22")
+        @ScheduledUntil(time = "02:11:22")
+        public Runnable testRunnable() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    @IntervalScheduled
+    static class IntervalScheduledTestClassAndMethodAnnotatedWithMinuteOutOfRange {
+
+        @ScheduledFrom(time = "01:11:22")
+        @ScheduledUntil(time = "02:60:22")
+        public Runnable testRunnable() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    @IntervalScheduled
+    static class IntervalScheduledTestClassAndMethodAnnotatedWithSecondOutOfRange {
+
+        @ScheduledFrom(time = "01:11:60")
+        @ScheduledUntil(time = "24:11:22")
         public Runnable testRunnable() throws IOException {
             return counter::getAndIncrement;
         }
