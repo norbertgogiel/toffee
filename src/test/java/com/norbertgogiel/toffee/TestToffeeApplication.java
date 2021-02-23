@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
@@ -117,6 +118,15 @@ public class TestToffeeApplication {
         assertEquals(2, counter.get());
     }
 
+    @Test
+    public void testInitAnnotatedMethodScheduledAtEveryMinute() throws InterruptedException {
+        counter = new AtomicInteger();
+        ToffeeApplication subject = new ToffeeApplication();
+        assertDoesNotThrow(() -> subject.init(ScheduledMethodAnnotatedAtEveryMinute.class));
+        Thread.sleep(2500);
+        assertEquals(1, counter.get());
+    }
+
     static class IntervalScheduledTestClass {
 
         public Runnable testRunnable() throws IOException {
@@ -198,6 +208,16 @@ public class TestToffeeApplication {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @EverySecond
+        public Runnable testRunnable() throws IOException {
+            return counter::getAndIncrement;
+        }
+    }
+
+    static class ScheduledMethodAnnotatedAtEveryMinute {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EveryMinute
         public Runnable testRunnable() throws IOException {
             return counter::getAndIncrement;
         }

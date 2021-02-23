@@ -1,5 +1,6 @@
 package com.norbertgogiel.toffee;
 
+import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
@@ -107,6 +108,8 @@ public class ToffeeApplication {
     private long tryGetPeriodFromAnnotation(Method method) {
         if (method.isAnnotationPresent(EverySecond.class)) {
             return 1000;
+        } else if (method.isAnnotationPresent(EveryMinute.class)) {
+            return 60000;
         }
         return 1;
     }
