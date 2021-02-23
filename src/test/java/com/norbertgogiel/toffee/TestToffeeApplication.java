@@ -3,6 +3,7 @@ package com.norbertgogiel.toffee;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
@@ -103,6 +104,17 @@ public class TestToffeeApplication {
         assertThrows(IllegalFormatPrecisionException.class, () -> subject.init(ScheduledMethodAnnotatedWithSecondOutOfRange.class));
     }
 
+    @Test
+    public void testInitAnnotatedMethodDuringSchedule() throws InterruptedException {
+        counter = new AtomicInteger();
+        ToffeeApplication subject = new ToffeeApplication();
+        assertDoesNotThrow(() -> subject.init(ScheduledMethodAnnotated24Hrs.class));
+        Thread.sleep(1300);
+        assertEquals(1, subject.getTotalCorePoolSize());
+        assertEquals(1, subject.getTotalCurrentPoolSize());
+        assertTrue(counter.get() > 0);
+    }
+
     static class IntervalScheduledTestClass {
 
         public Runnable testRunnable() throws IOException {
@@ -124,12 +136,21 @@ public class TestToffeeApplication {
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
         public Runnable testRunnableOne() throws IOException {
-            return counter::getAndIncrement;
+            return () -> System.out.println("method1");
         }
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
         public Runnable testRunnableTwo() throws IOException {
+            return () -> System.out.println("method2");
+        }
+    }
+
+    static class ScheduledMethodAnnotated24Hrs {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        public Runnable testRunnable() throws IOException {
             return counter::getAndIncrement;
         }
     }
