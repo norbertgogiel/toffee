@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.norbertgogiel.toffee.annotations.EveryHour;
 import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
@@ -123,7 +124,16 @@ public class TestToffeeApplication {
         counter = new AtomicInteger();
         ToffeeApplication subject = new ToffeeApplication();
         assertDoesNotThrow(() -> subject.init(ScheduledMethodAnnotatedAtEveryMinute.class));
-        Thread.sleep(2500);
+        Thread.sleep(1500);
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    public void testInitAnnotatedMethodScheduledAtVeryHour() throws InterruptedException {
+        counter = new AtomicInteger();
+        ToffeeApplication subject = new ToffeeApplication();
+        assertDoesNotThrow(() -> subject.init(ScheduledMethodAnnotatedAtEveryHour.class));
+        Thread.sleep(1500);
         assertEquals(1, counter.get());
     }
 
@@ -138,7 +148,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -147,13 +157,13 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
-        public Runnable testRunnableOne() throws IOException {
+        public Runnable testRunnableOne() {
             return () -> System.out.println("method1");
         }
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:11:22")
-        public Runnable testRunnableTwo() throws IOException {
+        public Runnable testRunnableTwo() {
             return () -> System.out.println("method2");
         }
     }
@@ -162,7 +172,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -171,7 +181,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "01")
         @ScheduledUntil(time = "02:11:22")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -180,7 +190,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "24:11:22")
         @ScheduledUntil(time = "02:11:22")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -189,7 +199,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "02:60:22")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -198,7 +208,7 @@ public class TestToffeeApplication {
 
         @ScheduledFrom(time = "01:11:60")
         @ScheduledUntil(time = "24:11:22")
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -208,7 +218,7 @@ public class TestToffeeApplication {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @EverySecond
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
@@ -218,7 +228,17 @@ public class TestToffeeApplication {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @EveryMinute
-        public Runnable testRunnable() throws IOException {
+        public Runnable testRunnable() {
+            return counter::getAndIncrement;
+        }
+    }
+
+    static class ScheduledMethodAnnotatedAtEveryHour {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EveryHour
+        public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
     }
