@@ -25,10 +25,6 @@ class IntervalScheduledTaskAgent {
         return taskAgent.getPoolSize();
     }
 
-    public int getCurrentTaskCount() {
-        return taskAgent.getActiveCount();
-    }
-
     public void submit(Runnable runnable,
                        long initDelay,
                        long period,

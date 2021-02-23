@@ -47,12 +47,6 @@ public class TestToffeeApplication {
     }
 
     @Test
-    public void testGetTotalCurrentTaskCount() {
-        ToffeeApplication subject = new ToffeeApplication();
-        assertEquals(0, subject.getTotalCurrentTaskCount());
-    }
-
-    @Test
     public void testInitIntervalScheduledNonNullClassWithMethod() {
         ToffeeApplication subject = new ToffeeApplication();
         assertDoesNotThrow(() -> subject.init(IntervalScheduledTestClass.class));
@@ -65,7 +59,6 @@ public class TestToffeeApplication {
         assertDoesNotThrow(() -> subject.init(ScheduledMethodWithAnnotatedFullTime.class));
         assertEquals(1, subject.getTotalCorePoolSize());
         assertEquals(1, subject.getTotalCurrentPoolSize());
-        assertEquals(0, subject.getTotalCurrentTaskCount());
         assertEquals(0, counter.get());
     }
 
@@ -76,7 +69,6 @@ public class TestToffeeApplication {
         assertDoesNotThrow(() -> subject.init(TwoScheduledMethodsWithAnnotatedFullTime.class));
         assertEquals(2, subject.getTotalCorePoolSize());
         assertEquals(2, subject.getTotalCurrentPoolSize());
-        assertEquals(0, subject.getTotalCurrentTaskCount());
         assertEquals(0, counter.get());
     }
 

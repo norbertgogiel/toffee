@@ -28,10 +28,6 @@ public class ToffeeApplication {
         return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
     }
 
-    public int getTotalCurrentTaskCount() {
-        return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentTaskCount).sum();
-    }
-
     private static void assertNotNull(Object object) {
         if (object == null) {
             throw new IllegalArgumentException("Object must not be null");
