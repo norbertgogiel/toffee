@@ -29,12 +29,6 @@ public class TestIntervalScheduledTaskAgent {
     }
 
     @Test
-    public void testCurrentTasksCount() {
-        IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);
-        assertEquals(0, subject.getCurrentTaskCount());
-    }
-
-    @Test
     public void testScheduleTask() throws InterruptedException {
         AtomicInteger atomicInteger = new AtomicInteger();
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);

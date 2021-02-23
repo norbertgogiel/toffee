@@ -28,10 +28,6 @@ public class ToffeeApplication {
         return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
     }
 
-    public int getTotalCurrentTaskCount() {
-        return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentTaskCount).sum();
-    }
-
     private static void assertNotNull(Object object) {
         if (object == null) {
             throw new IllegalArgumentException("Object must not be null");
@@ -57,11 +53,20 @@ public class ToffeeApplication {
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
         LocalTime scheduledFromLocalTime = validateAndParse(scheduledFrom.time());
         LocalTime scheduledUntilLocalTime = validateAndParse(scheduledUntil.time());
-        long initDelay = LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay();
-        long delayToShutdown = LocalTime.now().toSecondOfDay() - scheduledUntilLocalTime.toSecondOfDay();
-        if (LocalTime.now().compareTo(scheduledFromLocalTime) > 0) {
-            initDelay = (24 * 60 * 60) - initDelay;
-            delayToShutdown = (24 * 60 * 60) - delayToShutdown;
+        long initDelay;
+        long delayToShutdown;
+        if (LocalTime.now().compareTo(scheduledFromLocalTime) < 0) {
+            initDelay = LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay();
+        } else {
+            initDelay = (24 * 60 * 60) - (LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay());
+        }
+        if (LocalTime.now().compareTo(scheduledUntilLocalTime) < 0) {
+            delayToShutdown = scheduledUntilLocalTime.toSecondOfDay() - LocalTime.now().toSecondOfDay();
+            if (LocalTime.now().compareTo(scheduledFromLocalTime) > 0) {
+                initDelay = 0;
+            }
+        } else {
+            delayToShutdown = (24 * 60 * 60) - LocalTime.now().toSecondOfDay() - scheduledUntilLocalTime.toSecondOfDay();
         }
         tryToSchedule(source, method, initDelay, delayToShutdown);
     }
