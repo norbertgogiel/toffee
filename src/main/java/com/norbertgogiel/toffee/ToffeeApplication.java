@@ -1,5 +1,8 @@
 package com.norbertgogiel.toffee;
 
+import com.norbertgogiel.toffee.annotations.EveryHour;
+import com.norbertgogiel.toffee.annotations.EveryMinute;
+import com.norbertgogiel.toffee.annotations.EverySecond;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
@@ -53,12 +56,13 @@ public class ToffeeApplication {
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
         LocalTime scheduledFromLocalTime = validateAndParse(scheduledFrom.time());
         LocalTime scheduledUntilLocalTime = validateAndParse(scheduledUntil.time());
+        long period = tryGetPeriodFromAnnotation(method);
         long initDelay;
         long delayToShutdown;
         if (LocalTime.now().compareTo(scheduledFromLocalTime) < 0) {
-            initDelay = LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay();
+            initDelay = scheduledFromLocalTime.toSecondOfDay() - LocalTime.now().toSecondOfDay() ;
         } else {
-            initDelay = (24 * 60 * 60) - (LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toSecondOfDay());
+            initDelay = (24 * 60 * 60) - (LocalTime.now().toSecondOfDay() - scheduledFromLocalTime.toNanoOfDay());
         }
         if (LocalTime.now().compareTo(scheduledUntilLocalTime) < 0) {
             delayToShutdown = scheduledUntilLocalTime.toSecondOfDay() - LocalTime.now().toSecondOfDay();
@@ -68,7 +72,7 @@ public class ToffeeApplication {
         } else {
             delayToShutdown = (24 * 60 * 60) - LocalTime.now().toSecondOfDay() - scheduledUntilLocalTime.toSecondOfDay();
         }
-        tryToSchedule(source, method, initDelay, delayToShutdown);
+        tryToSchedule(source, method, initDelay, period, delayToShutdown);
     }
 
     private LocalTime validateAndParse(String time) {
@@ -91,14 +95,25 @@ public class ToffeeApplication {
         return LocalTime.of(hour, minute, second);
     }
 
-    private void tryToSchedule(Class<?> source, Method method, long initDelay, long delayToShutdown) {
+    private void tryToSchedule(Class<?> source, Method method, long initDelay, long period, long delayToShutdown) {
         IntervalScheduledTaskAgent agent = new IntervalScheduledTaskAgent(1);
         registeredAgents.add(agent);
         try {
             Runnable runnable = (Runnable) method.invoke(source.newInstance());
-            agent.submit(runnable, initDelay, 1, delayToShutdown, TimeUnit.MILLISECONDS);
+            agent.submit(runnable, initDelay, period, delayToShutdown, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create a legal runnable", e);
         }
+    }
+
+    private long tryGetPeriodFromAnnotation(Method method) {
+        if (method.isAnnotationPresent(EverySecond.class)) {
+            return 1;
+        } else if (method.isAnnotationPresent(EveryMinute.class)) {
+            return 60;
+        } else if (method.isAnnotationPresent(EveryHour.class)) {
+            return 60 * 60 ;
+        }
+        return 1;
     }
 }
