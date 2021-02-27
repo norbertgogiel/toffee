@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.norbertgogiel.toffee.annotations.Every;
 import com.norbertgogiel.toffee.annotations.EveryHour;
 import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
@@ -13,7 +14,9 @@ import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.IllegalFormatPrecisionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestToffeeApplication {
@@ -137,6 +140,17 @@ public class TestToffeeApplication {
         assertEquals(1, counter.get());
     }
 
+    @Test
+    public void testInitAnnotatedMethodScheduledAtVery2Seconds() throws InterruptedException {
+        counter = new AtomicInteger();
+        ToffeeApplication subject = new ToffeeApplication();
+        assertDoesNotThrow(() -> subject.init(ScheduledMethodAnnotatedAtEvery2Seconds.class));
+        Thread.sleep(1500);
+        assertEquals(1, counter.get());
+        Thread.sleep(1600);
+        assertEquals(2, counter.get());
+    }
+
     static class IntervalScheduledTestClass {
 
         public Runnable testRunnable() throws IOException {
@@ -238,6 +252,16 @@ public class TestToffeeApplication {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @EveryHour
+        public Runnable testRunnable() {
+            return counter::getAndIncrement;
+        }
+    }
+
+    static class ScheduledMethodAnnotatedAtEvery2Seconds {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @Every(period = 2, timeUnit = TimeUnit.SECONDS)
         public Runnable testRunnable() {
             return counter::getAndIncrement;
         }
