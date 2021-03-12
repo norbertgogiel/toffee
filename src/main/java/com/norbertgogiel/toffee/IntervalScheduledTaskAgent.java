@@ -25,13 +25,18 @@ class IntervalScheduledTaskAgent {
         return taskAgent.getPoolSize();
     }
 
-    public void submit(Runnable runnable,
-                       long initDelay,
-                       long period,
-                       long delayToShutdown,
-                       TimeUnit timeUnit) {
-        Future<?> future =  taskAgent.scheduleAtFixedRate(runnable, initDelay, period, timeUnit);
-        shutdownAgent.schedule(() -> future.cancel(false), delayToShutdown, timeUnit);
+    public void submit(IntervalScheduledTask task) {
+        Future<?> future = taskAgent.scheduleAtFixedRate(
+                task.getRunnable(),
+                task.getInitDelay(),
+                task.getPeriod(),
+                task.getTimeUnit()
+        );
+        shutdownAgent.schedule(
+                () -> future.cancel(false),
+                task.getDelayToShutdown(),
+                task.getTimeUnit()
+        );
     }
 
     public void submit(Runnable runnable,
