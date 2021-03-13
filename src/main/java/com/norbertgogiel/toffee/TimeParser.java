@@ -1,5 +1,6 @@
 package com.norbertgogiel.toffee;
 
+import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.IllegalFormatPrecisionException;
 
@@ -14,14 +15,22 @@ public class TimeParser {
         int minute = Integer.parseInt(timeArr[1]);
         int second = Integer.parseInt(timeArr[2]);
         if (hour < 0 || hour > 23) {
-            throw new IllegalFormatPrecisionException(hour);
+           throwDateTimeException("hour (0 - 23)", hour);
         }
         if (minute < 0 || minute > 59) {
-            throw new IllegalFormatPrecisionException(minute);
+            throwDateTimeException("minute (0 - 59)", minute);
         }
         if (second < 0 || second > 59) {
-            throw new IllegalFormatPrecisionException(second);
+            throwDateTimeException("second (0 - 59)", second);
         }
         return LocalTime.of(hour, minute, second);
+    }
+
+    private void throwDateTimeException(String message, int actualValue) {
+        throw new DateTimeException("Invalid value for "
+                .concat(message)
+                .concat(". Actual value: ")
+                .concat(String.valueOf(actualValue))
+        );
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.IllegalFormatPrecisionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,19 +29,19 @@ public class TestTimeParser {
     @Test
     public void testHourOutOfRange() {
         TimeParser subject = new TimeParser();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.validateAndParse("24:59:59"));
+        assertThrows(DateTimeException.class, () -> subject.validateAndParse("24:59:59"));
     }
 
     @Test
     public void testMinuteOutOfRange() {
         TimeParser subject = new TimeParser();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.validateAndParse("23:60:59"));
+        assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:60:59"));
     }
 
     @Test
     public void testSecondOutOfRange() {
         TimeParser subject = new TimeParser();
-        assertThrows(IllegalFormatPrecisionException.class, () -> subject.validateAndParse("23:59:60"));
+        assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:59:60"));
     }
 
     @Test
