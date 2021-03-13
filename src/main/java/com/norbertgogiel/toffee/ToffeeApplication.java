@@ -15,7 +15,12 @@ public class ToffeeApplication {
 
     public ToffeeApplication() {
         TimeParser timeParser = new TimeParser();
-        intervalScheduledTaskProcessor = new IntervalScheduledTaskProcessor(registeredAgents, timeParser);
+        TimePeriodAnnotationProcessor timePeriodAnnotationProcessor = new TimePeriodAnnotationProcessor();
+        intervalScheduledTaskProcessor = new IntervalScheduledTaskProcessor(
+                registeredAgents,
+                timeParser,
+                timePeriodAnnotationProcessor
+        );
     }
 
     public void init(Class<?> source) {
