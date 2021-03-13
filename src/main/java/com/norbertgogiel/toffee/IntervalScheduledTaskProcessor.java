@@ -9,16 +9,17 @@ import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
 import java.lang.reflect.Method;
 import java.time.LocalTime;
-import java.util.IllegalFormatPrecisionException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class IntervalScheduledTaskProcessor {
 
     private List<IntervalScheduledTaskAgent> registeredAgents;
+    private TimeParser timeParser;
 
-    public IntervalScheduledTaskProcessor(List<IntervalScheduledTaskAgent> registeredAgents) {
+    public IntervalScheduledTaskProcessor(List<IntervalScheduledTaskAgent> registeredAgents, TimeParser timeParser) {
         this.registeredAgents = registeredAgents;
+        this.timeParser = timeParser;
     }
 
     public void scheduleTask(Class<?> source, Method method) {
@@ -29,8 +30,8 @@ public class IntervalScheduledTaskProcessor {
     private IntervalScheduledTask extractAndPrepareTask(Class<?> source, Method method) {
         ScheduledFrom scheduledFrom = method.getDeclaredAnnotation(ScheduledFrom.class);
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
-        LocalTime scheduledFromLocalTime = validateAndParse(scheduledFrom.time());
-        LocalTime scheduledUntilLocalTime = validateAndParse(scheduledUntil.time());
+        LocalTime scheduledFromLocalTime = timeParser.validateAndParse(scheduledFrom.time());
+        LocalTime scheduledUntilLocalTime = timeParser.validateAndParse(scheduledUntil.time());
         long period = tryGetPeriodFromAnnotation(method);
         long initDelay;
         long delayToShutdown;
@@ -53,26 +54,6 @@ public class IntervalScheduledTaskProcessor {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create a legal runnable", e);
         }
-    }
-
-    private LocalTime validateAndParse(String time) {
-        String[] timeArr = time.split(":");
-        if (timeArr.length != 3) {
-            throw new IllegalFormatPrecisionException(timeArr.length);
-        }
-        int hour = Integer.parseInt(timeArr[0]);
-        int minute = Integer.parseInt(timeArr[1]);
-        int second = Integer.parseInt(timeArr[2]);
-        if (hour < 0 || hour > 23) {
-            throw new IllegalFormatPrecisionException(hour);
-        }
-        if (minute < 0 || minute > 59) {
-            throw new IllegalFormatPrecisionException(minute);
-        }
-        if (second < 0 || second > 59) {
-            throw new IllegalFormatPrecisionException(second);
-        }
-        return LocalTime.of(hour, minute, second);
     }
 
     private void tryToSchedule(IntervalScheduledTask task) {

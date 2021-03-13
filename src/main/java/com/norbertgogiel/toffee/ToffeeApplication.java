@@ -11,7 +11,12 @@ import java.util.List;
 public class ToffeeApplication {
 
     private List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-    private IntervalScheduledTaskProcessor intervalScheduledTaskProcessor = new IntervalScheduledTaskProcessor(registeredAgents);
+    private IntervalScheduledTaskProcessor intervalScheduledTaskProcessor;
+
+    public ToffeeApplication() {
+        TimeParser timeParser = new TimeParser();
+        intervalScheduledTaskProcessor = new IntervalScheduledTaskProcessor(registeredAgents, timeParser);
+    }
 
     public void init(Class<?> source) {
         assertNotNull(source);
