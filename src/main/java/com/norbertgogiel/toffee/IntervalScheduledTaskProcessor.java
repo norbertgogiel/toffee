@@ -1,9 +1,5 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.Every;
-import com.norbertgogiel.toffee.annotations.EveryHour;
-import com.norbertgogiel.toffee.annotations.EveryMinute;
-import com.norbertgogiel.toffee.annotations.EverySecond;
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
@@ -16,10 +12,15 @@ public class IntervalScheduledTaskProcessor {
 
     private List<IntervalScheduledTaskAgent> registeredAgents;
     private TimeParser timeParser;
+    private TimePeriodAnnotationProcessor timePeriodAnnotationProcessor;
 
-    public IntervalScheduledTaskProcessor(List<IntervalScheduledTaskAgent> registeredAgents, TimeParser timeParser) {
+    public IntervalScheduledTaskProcessor(
+            List<IntervalScheduledTaskAgent> registeredAgents,
+            TimeParser timeParser,
+            TimePeriodAnnotationProcessor timePeriodAnnotationProcessor) {
         this.registeredAgents = registeredAgents;
         this.timeParser = timeParser;
+        this.timePeriodAnnotationProcessor = timePeriodAnnotationProcessor;
     }
 
     public void scheduleTask(Class<?> source, Method method) {
@@ -32,7 +33,7 @@ public class IntervalScheduledTaskProcessor {
         ScheduledUntil scheduledUntil = method.getDeclaredAnnotation(ScheduledUntil.class);
         LocalTime scheduledFromLocalTime = timeParser.validateAndParse(scheduledFrom.time());
         LocalTime scheduledUntilLocalTime = timeParser.validateAndParse(scheduledUntil.time());
-        long period = tryGetPeriodFromAnnotation(method);
+        long period = timePeriodAnnotationProcessor.tryGetPeriodFromAnnotation(method);
         long initDelay;
         long delayToShutdown;
         if (LocalTime.now().compareTo(scheduledFromLocalTime) < 0) {
@@ -60,20 +61,5 @@ public class IntervalScheduledTaskProcessor {
         IntervalScheduledTaskAgent agent = new IntervalScheduledTaskAgent(1);
         registeredAgents.add(agent);
         agent.submit(task);
-    }
-
-    private long tryGetPeriodFromAnnotation(Method method) {
-        if (method.isAnnotationPresent(EverySecond.class)) {
-            return 1;
-        } else if (method.isAnnotationPresent(EveryMinute.class)) {
-            return 60;
-        } else if (method.isAnnotationPresent(EveryHour.class)) {
-            return 60 * 60 ;
-        } else if (method.isAnnotationPresent(Every.class)) {
-            Every every = method.getDeclaredAnnotation(Every.class);
-            int period = every.period();
-            return every.timeUnit().toSeconds(period);
-        }
-        return 1;
     }
 }
