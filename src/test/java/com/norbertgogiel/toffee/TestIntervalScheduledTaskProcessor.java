@@ -1,5 +1,11 @@
 package com.norbertgogiel.toffee;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 import org.junit.Before;
@@ -8,40 +14,37 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestIntervalScheduledTaskProcessor {
 
     @Mock
     private TimePeriodAnnotationProcessor mockTimePeriodAnnotationProcessor;
     @Mock
-    private TimeParser mockTimeParser;
-    private static AtomicInteger counter;
+    private IntervalScheduledAnnotationProcessor mockDelayCalculator;
+    @Mock
+    private IntervalScheduledTaskAgentProvider mockAgentProvider;
+    @Mock
+    private IntervalScheduledTaskAgent mockAgent;
+    @Mock
+    private List<IntervalScheduledTaskAgent> mockRegisteredAgents;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(mockTimePeriodAnnotationProcessor.tryGetPeriodFromAnnotation(Mockito.any())).thenReturn(1L);
+        when(mockTimePeriodAnnotationProcessor.process(Mockito.any())).thenReturn(1L);
     }
 
     @Test
-    public void testInitScheduledMethodWithAnnotatedFullTime() {
-        counter = new AtomicInteger(0);
-        List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-        Mockito.when(mockTimeParser.validateAndParse("01:11:22")).thenReturn(LocalTime.of(1,11,22));
-        Mockito.when(mockTimeParser.validateAndParse("01:11:23")).thenReturn(LocalTime.of(1,11,23));
+    public void testScheduled() {
+        when(mockDelayCalculator.process(Mockito.any())).thenReturn(
+                new IntervalScheduledTime(10000, 10000));
+        when(mockAgentProvider.get()).thenReturn(mockAgent);
         IntervalScheduledTaskProcessor subject = new IntervalScheduledTaskProcessor(
-                registeredAgents,
-                mockTimeParser,
-                mockTimePeriodAnnotationProcessor
+                mockRegisteredAgents,
+                mockTimePeriodAnnotationProcessor,
+                mockDelayCalculator,
+                mockAgentProvider
         );
 
         assertDoesNotThrow(() -> subject.scheduleTask(
@@ -49,48 +52,45 @@ public class TestIntervalScheduledTaskProcessor {
                 ScheduledMethodWithAnnotatedFullTime.class.getMethod("testRunnable")
         ));
 
-        assertEquals(1, registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum());
-        assertEquals(1, registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum());
-        assertEquals(0, counter.get());
+        verify(mockTimePeriodAnnotationProcessor).process(Mockito.any());
+        verify(mockDelayCalculator).process(Mockito.any());
+        verify(mockAgentProvider).get();
+        verify(mockAgent).submit(Mockito.any());
+        verify(mockRegisteredAgents).add(Mockito.any());
     }
 
     @Test
-    public void testInitAnnotatedMethodDuringSchedule() {
-        counter = new AtomicInteger(0);
-        List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-        Mockito.when(mockTimeParser.validateAndParse("00:00:00")).thenReturn(LocalTime.of(0,0,0));
-        Mockito.when(mockTimeParser.validateAndParse("23:59:59")).thenReturn(LocalTime.of(23,59,59));
+    public void testScheduledThrowsException() {
         IntervalScheduledTaskProcessor subject = new IntervalScheduledTaskProcessor(
-                registeredAgents,
-                mockTimeParser,
-                mockTimePeriodAnnotationProcessor
+                mockRegisteredAgents,
+                mockTimePeriodAnnotationProcessor,
+                mockDelayCalculator,
+                mockAgentProvider
         );
 
-        assertDoesNotThrow(() -> subject.scheduleTask(
-                ScheduledMethodAnnotated24Hrs.class,
-                ScheduledMethodAnnotated24Hrs.class.getMethod("testRunnable")
+        assertThrows(IllegalStateException.class, () -> subject.scheduleTask(
+                ScheduledMethodThrowsException.class,
+                ScheduledMethodThrowsException.class.getMethod("testRunnable")
         ));
-
-        assertEquals(1, registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum());
-        assertEquals(1, registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum());
-        assertTrue(counter.get() > 0);
+        verifyZeroInteractions(mockAgentProvider);
+        verifyZeroInteractions(mockAgent);
+        verifyZeroInteractions(mockRegisteredAgents);
     }
 
     static class ScheduledMethodWithAnnotatedFullTime {
 
         @ScheduledFrom(time = "01:11:22")
         @ScheduledUntil(time = "01:11:23")
-        public Runnable testRunnable() {
-            return counter::getAndIncrement;
+        public void testRunnable() {
         }
     }
 
-    static class ScheduledMethodAnnotated24Hrs {
+    static class ScheduledMethodThrowsException {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
-        public Runnable testRunnable() {
-            return counter::getAndIncrement;
+        public Runnable testRunnable() throws Exception {
+            throw new Exception("Evil");
         }
     }
 }

@@ -5,20 +5,17 @@ import java.util.concurrent.TimeUnit;
 public class IntervalScheduledTask {
 
     private final Runnable runnable;
-    private final long initDelay;
+    private final IntervalScheduledTime delay;
     private final long period;
-    private final long delayToShutdown;
     private final TimeUnit timeUnit;
 
     public IntervalScheduledTask(Runnable runnable,
-                                 long initDelay,
+                                 IntervalScheduledTime delay,
                                  long period,
-                                 long delayToShutdown,
                                  TimeUnit timeUnit) {
         this.runnable = runnable;
-        this.initDelay = initDelay;
+        this.delay = delay;
         this.period = period;
-        this.delayToShutdown = delayToShutdown;
         this.timeUnit = timeUnit;
     }
 
@@ -26,8 +23,8 @@ public class IntervalScheduledTask {
         return runnable;
     }
 
-    public long getInitDelay() {
-        return initDelay;
+    public long getDelayToStart() {
+        return delay.getDelayToStart();
     }
 
     public long getPeriod() {
@@ -35,7 +32,7 @@ public class IntervalScheduledTask {
     }
 
     public long getDelayToShutdown() {
-        return delayToShutdown;
+        return delay.getDelayToShutdown();
     }
 
     public TimeUnit getTimeUnit() {

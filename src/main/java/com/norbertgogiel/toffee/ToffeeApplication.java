@@ -16,10 +16,13 @@ public class ToffeeApplication {
     public ToffeeApplication() {
         TimeParser timeParser = new TimeParser();
         TimePeriodAnnotationProcessor timePeriodAnnotationProcessor = new TimePeriodAnnotationProcessor();
+        IntervalScheduledAnnotationProcessor delayCalculator = new IntervalScheduledAnnotationProcessor(timeParser);
+        IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
         intervalScheduledTaskProcessor = new IntervalScheduledTaskProcessor(
                 registeredAgents,
-                timeParser,
-                timePeriodAnnotationProcessor
+                timePeriodAnnotationProcessor,
+                delayCalculator,
+                agentProvider
         );
     }
 
