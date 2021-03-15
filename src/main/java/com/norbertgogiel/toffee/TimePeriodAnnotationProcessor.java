@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 public class TimePeriodAnnotationProcessor {
 
-    public long tryGetPeriodFromAnnotation(Method method) {
+    public long process(Method method) {
         if (method.isAnnotationPresent(EverySecond.class)) {
             return 1;
         } else if (method.isAnnotationPresent(EveryMinute.class)) {

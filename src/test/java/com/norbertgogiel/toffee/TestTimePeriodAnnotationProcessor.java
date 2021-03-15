@@ -23,7 +23,7 @@ public class TestTimePeriodAnnotationProcessor {
     public void testScheduledAtEverySecond() throws NoSuchMethodException {
         TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.tryGetPeriodFromAnnotation(
+        long result = subject.process(
                 ScheduledMethodAnnotatedAtEverySecond.class.getMethod("testRunnable")
         );
 
@@ -34,7 +34,7 @@ public class TestTimePeriodAnnotationProcessor {
     public void testIScheduledAtEveryMinute() throws NoSuchMethodException {
         TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.tryGetPeriodFromAnnotation(
+        long result = subject.process(
                 ScheduledMethodAnnotatedAtEveryMinute.class.getMethod("testRunnable")
         );
 
@@ -45,7 +45,7 @@ public class TestTimePeriodAnnotationProcessor {
     public void testScheduledAtVeryHour() throws NoSuchMethodException {
         TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.tryGetPeriodFromAnnotation(
+        long result = subject.process(
                 ScheduledMethodAnnotatedAtEveryHour.class.getMethod("testRunnable")
         );
 
@@ -56,7 +56,7 @@ public class TestTimePeriodAnnotationProcessor {
     public void testScheduledAtVery2Seconds() throws NoSuchMethodException {
         TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.tryGetPeriodFromAnnotation(
+        long result = subject.process(
                 ScheduledMethodAnnotatedAtEvery2Seconds.class.getMethod("testRunnable")
         );
 

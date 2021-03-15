@@ -34,9 +34,8 @@ public class TestIntervalScheduledTaskAgent {
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(2);
         IntervalScheduledTask task = new IntervalScheduledTask(
                 atomicInteger::getAndIncrement,
-                0,
+                new IntervalScheduledTime(0, 1000),
                 100,
-                1000,
                 TimeUnit.MILLISECONDS
         );
         subject.submit(task);
@@ -50,9 +49,8 @@ public class TestIntervalScheduledTaskAgent {
         IntervalScheduledTaskAgent subject = new IntervalScheduledTaskAgent(1);
         IntervalScheduledTask task = new IntervalScheduledTask(
                 atomicInteger::getAndIncrement,
-                0,
+                new IntervalScheduledTime(0, 150),
                 100,
-                150,
                 TimeUnit.MILLISECONDS
         );
         subject.submit(task);

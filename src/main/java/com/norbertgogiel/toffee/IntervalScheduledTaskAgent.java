@@ -28,7 +28,7 @@ class IntervalScheduledTaskAgent {
     public void submit(IntervalScheduledTask task) {
         Future<?> future = taskAgent.scheduleAtFixedRate(
                 task.getRunnable(),
-                task.getInitDelay(),
+                task.getDelayToStart(),
                 task.getPeriod(),
                 task.getTimeUnit()
         );
