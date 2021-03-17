@@ -1,9 +1,5 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,15 +43,6 @@ public class ToffeeApplication {
 
     private void processSource(Class<?> source) {
         Arrays.stream(source.getMethods())
-                .forEach(method -> {
-                    if (isMethodAValidSchedule(method))
-                        intervalScheduledTaskProcessor.scheduleTask(source, method);
-                });
-    }
-
-    private boolean isMethodAValidSchedule(Method method) {
-        return method.isAnnotationPresent(ScheduledFrom.class)
-                && method.isAnnotationPresent(ScheduledUntil.class)
-                && method.getReturnType() == Runnable.class;
+                .forEach(method -> intervalScheduledTaskProcessor.tryScheduleTask(source, method));
     }
 }
