@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 group 'com.norbertgogiel'
@@ -15,4 +16,28 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
     testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        html.destination = file("${buildDir}/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+       rule {
+           element = 'CLASS'
+           limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 1.00
+            }
+        }
+    }
+}
+
+task fullBuild {
+    finalizedBy build, jacocoTestReport, jacocoTestCoverageVerification
 }
