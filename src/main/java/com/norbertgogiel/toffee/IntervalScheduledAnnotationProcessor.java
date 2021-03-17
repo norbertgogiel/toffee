@@ -36,3 +36,5 @@ public class IntervalScheduledAnnotationProcessor {
         return start.toSecondOfDay() - LocalTime.now().toSecondOfDay();
     }
 }
+
+
