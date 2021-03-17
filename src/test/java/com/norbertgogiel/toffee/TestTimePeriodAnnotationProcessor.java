@@ -63,6 +63,16 @@ public class TestTimePeriodAnnotationProcessor {
         assertEquals(2, result);
     }
 
+    @Test
+    public void testNoAnnotation() throws NoSuchMethodException {
+        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+
+        long result = subject.process(
+                NotAnnotated.class.getMethod("testRunnable")
+        );
+
+        assertEquals(1, result);
+    }
 
     static class ScheduledMethodAnnotatedAtEverySecond {
 
@@ -88,6 +98,12 @@ public class TestTimePeriodAnnotationProcessor {
     static class ScheduledMethodAnnotatedAtEvery2Seconds {
 
         @Every(period = 2, timeUnit = TimeUnit.SECONDS)
+        public void testRunnable() {
+        }
+    }
+
+    static class NotAnnotated {
+
         public void testRunnable() {
         }
     }
