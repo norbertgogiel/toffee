@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ToffeeApplication {
+public class ToffeeContext {
 
     private List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
     private IntervalScheduledTaskProcessor intervalScheduledTaskProcessor;
 
-    public ToffeeApplication() {
+    public ToffeeContext() {
         TimeParser timeParser = new TimeParser();
         TimePeriodAnnotationProcessor timePeriodAnnotationProcessor = new TimePeriodAnnotationProcessor();
         IntervalScheduledAnnotationProcessor delayCalculator = new IntervalScheduledAnnotationProcessor(timeParser);
@@ -22,7 +22,7 @@ public class ToffeeApplication {
         );
     }
 
-    public void init(Class<?> source) {
+    public void include(Class<?> source) {
         assertNotNull(source);
         processSource(source);
     }
