@@ -9,7 +9,7 @@ public class ToffeeContext {
     private List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
     private IntervalScheduledTaskProcessor intervalScheduledTaskProcessor;
 
-    public ToffeeContext() {
+    public ToffeeContext(Class<?> ... sources) {
         TimeParser timeParser = new TimeParser();
         TimePeriodAnnotationProcessor timePeriodAnnotationProcessor = new TimePeriodAnnotationProcessor();
         IntervalScheduledAnnotationProcessor delayCalculator = new IntervalScheduledAnnotationProcessor(timeParser);
@@ -20,11 +20,7 @@ public class ToffeeContext {
                 delayCalculator,
                 agentProvider
         );
-    }
-
-    public void include(Class<?> source) {
-        assertNotNull(source);
-        processSource(source);
+        processSources(sources);
     }
 
     public int getTotalCorePoolSize() {
@@ -35,14 +31,18 @@ public class ToffeeContext {
         return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
     }
 
-    private static void assertNotNull(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("Object must not be null");
-        }
+    private void processSources(Class<?> ... sources) {
+        Arrays.stream(sources).forEach(this::processSource);
     }
 
     private void processSource(Class<?> source) {
+        assertNotNull(source);
         Arrays.stream(source.getMethods())
                 .forEach(method -> intervalScheduledTaskProcessor.tryScheduleTask(source, method));
+    }
+
+    private static void assertNotNull(Object object) {
+        if (object == null)
+            throw new IllegalArgumentException("Object must not be null");
     }
 }

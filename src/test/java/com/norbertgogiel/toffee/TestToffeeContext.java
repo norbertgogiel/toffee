@@ -3,9 +3,9 @@ package com.norbertgogiel.toffee;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 
 import java.io.IOException;
 
@@ -13,19 +13,17 @@ public class TestToffeeContext {
 
     @Test
     public void testDefaultConstructor() {
-        assertDoesNotThrow(ToffeeContext::new);
+        assertDoesNotThrow((ThrowingSupplier<ToffeeContext>) ToffeeContext::new);
     }
 
     @Test
     public void testIncludeObject() {
-        ToffeeContext subject = new ToffeeContext();
-        assertDoesNotThrow(() -> subject.include(TestToffeeContext.class));
+        assertDoesNotThrow(() -> new ToffeeContext(TestToffeeContext.class));
     }
 
     @Test
     public void testIncludeNullObjectAndThrow() {
-        ToffeeContext subject = new ToffeeContext();
-        assertThrows(IllegalArgumentException.class, () -> subject.include(null));
+        assertThrows(IllegalArgumentException.class, () -> new ToffeeContext((Class<?>) null));
     }
 
     @Test
@@ -42,11 +40,27 @@ public class TestToffeeContext {
 
     @Test
     public void testIncludeIntervalScheduledNonNullClassWithMethod() {
-        ToffeeContext subject = new ToffeeContext();
-        assertDoesNotThrow(() -> subject.include(IntervalScheduledTestClass.class));
+        assertDoesNotThrow(() -> new ToffeeContext(IntervalScheduledTestClass.class));
+    }
+
+    @Test
+    public void testInitWithMoreThanOneClass() {
+        assertDoesNotThrow(() ->
+                new ToffeeContext(
+                IntervalScheduledTestClass.class,
+                AlternativeIntervalScheduledTestClass.class
+                )
+        );
     }
 
     static class IntervalScheduledTestClass {
+
+        public Runnable testRunnable() throws IOException {
+            throw new IOException("evil");
+        }
+    }
+
+    static class AlternativeIntervalScheduledTestClass {
 
         public Runnable testRunnable() throws IOException {
             throw new IOException("evil");
