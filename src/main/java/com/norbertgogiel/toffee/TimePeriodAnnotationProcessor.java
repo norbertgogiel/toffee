@@ -15,7 +15,7 @@ public class TimePeriodAnnotationProcessor {
         } else if (method.isAnnotationPresent(EveryMinute.class)) {
             return 60;
         } else if (method.isAnnotationPresent(EveryHour.class)) {
-            return 60 * 60 ;
+            return 3600 ;
         } else if (method.isAnnotationPresent(Every.class)) {
             Every every = method.getDeclaredAnnotation(Every.class);
             int period = every.period();
