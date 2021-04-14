@@ -1,11 +1,7 @@
 package com.norbertgogiel.toffee;
 
-
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 class IntervalScheduledTaskAgent {
 

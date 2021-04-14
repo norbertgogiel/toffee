@@ -1,10 +1,10 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
-
 import java.lang.reflect.Method;
 import java.time.LocalTime;
+
+import com.norbertgogiel.toffee.annotations.ScheduledFrom;
+import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
 public class IntervalScheduledAnnotationProcessor {
 

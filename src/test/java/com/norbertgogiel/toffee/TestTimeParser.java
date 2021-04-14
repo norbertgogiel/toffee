@@ -1,17 +1,17 @@
 package com.norbertgogiel.toffee;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.util.IllegalFormatPrecisionException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 public class TestTimeParser {
 

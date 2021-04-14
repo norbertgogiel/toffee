@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'com.diffplug.gradle.spotless' version '4.5.1'
 }
 
 group 'com.norbertgogiel'
@@ -35,6 +36,13 @@ jacocoTestCoverageVerification {
                 minimum = 1.00
             }
         }
+    }
+}
+
+spotless {
+    java {
+        importOrder("java", "javax", "com.norbertgogiel", "")
+        removeUnusedImports()
     }
 }
 

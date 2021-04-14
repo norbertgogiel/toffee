@@ -1,11 +1,11 @@
 package com.norbertgogiel.toffee;
 
+import java.lang.reflect.Method;
+
 import com.norbertgogiel.toffee.annotations.Every;
 import com.norbertgogiel.toffee.annotations.EveryHour;
 import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
-
-import java.lang.reflect.Method;
 
 public class TimePeriodAnnotationProcessor {
 

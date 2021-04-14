@@ -4,14 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalTime;
+
 import com.norbertgogiel.toffee.annotations.ScheduledFrom;
 import com.norbertgogiel.toffee.annotations.ScheduledUntil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.time.LocalTime;
 
 public class TestIntervalScheduledAnnotationProcessor {
 

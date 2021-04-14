@@ -1,16 +1,17 @@
 package com.norbertgogiel.toffee;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.concurrent.TimeUnit;
+
 import com.norbertgogiel.toffee.annotations.Every;
 import com.norbertgogiel.toffee.annotations.EveryHour;
 import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTimePeriodAnnotationProcessor {
 

@@ -3,11 +3,10 @@ package com.norbertgogiel.toffee;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-
-import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Test;
 
 public class TestIntervalScheduledTaskAgent {
 

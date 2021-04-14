@@ -1,11 +1,11 @@
 package com.norbertgogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import com.norbertgogiel.toffee.annotations.ScheduledFrom;
+import com.norbertgogiel.toffee.annotations.ScheduledUntil;
 
 public class IntervalScheduledTaskProcessor {
 
