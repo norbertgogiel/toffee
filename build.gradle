@@ -47,6 +47,10 @@ spotless {
     }
 }
 
+task devBuild {
+    finalizedBy spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
+}
+
 task ciBuild {
     finalizedBy build, jacocoTestReport, jacocoTestCoverageVerification
 }
