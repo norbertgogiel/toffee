@@ -43,6 +43,7 @@ spotless {
     java {
         importOrder("java", "javax", "com.norbertgogiel", "")
         removeUnusedImports()
+        googleJavaFormat()
     }
 }
 

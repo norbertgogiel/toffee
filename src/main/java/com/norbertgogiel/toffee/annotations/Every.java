@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Every {
 
-    int period() default 0;
+  int period() default 0;
 
-    TimeUnit timeUnit() default TimeUnit.SECONDS;
+  TimeUnit timeUnit() default TimeUnit.SECONDS;
 }

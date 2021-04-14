@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScheduledUntil {
 
-    String time() default "";
+  String time() default "";
 }
