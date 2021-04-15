@@ -6,8 +6,8 @@ import org.junit.Test;
 
 public class TestIntervalScheduledTaskAgentProvider {
 
-    @Test
-    public void testGet() {
-        assertNotNull(new IntervalScheduledTaskAgentProvider().get());
-    }
+  @Test
+  public void testGet() {
+    assertNotNull(new IntervalScheduledTaskAgentProvider().get());
+  }
 }

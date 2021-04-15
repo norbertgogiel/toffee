@@ -7,5 +7,4 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EveryMinute {
-}
+public @interface EveryMinute {}

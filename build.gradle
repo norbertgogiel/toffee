@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'com.diffplug.gradle.spotless' version '4.5.1'
 }
 
 group 'com.norbertgogiel'
@@ -36,6 +37,18 @@ jacocoTestCoverageVerification {
             }
         }
     }
+}
+
+spotless {
+    java {
+        importOrder("java", "javax", "com.norbertgogiel", "")
+        removeUnusedImports()
+        googleJavaFormat()
+    }
+}
+
+task devBuild {
+    finalizedBy spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
 }
 
 task ciBuild {

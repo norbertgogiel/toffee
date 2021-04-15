@@ -1,110 +1,98 @@
 package com.norbertgogiel.toffee;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.norbertgogiel.toffee.annotations.Every;
 import com.norbertgogiel.toffee.annotations.EveryHour;
 import com.norbertgogiel.toffee.annotations.EveryMinute;
 import com.norbertgogiel.toffee.annotations.EverySecond;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class TestTimePeriodAnnotationProcessor {
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+  @Before
+  public void setUp() {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    @Test
-    public void testScheduledAtEverySecond() throws NoSuchMethodException {
-        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+  @Test
+  public void testScheduledAtEverySecond() throws NoSuchMethodException {
+    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.process(
-                ScheduledMethodAnnotatedAtEverySecond.class.getMethod("testRunnable")
-        );
+    long result =
+        subject.process(ScheduledMethodAnnotatedAtEverySecond.class.getMethod("testRunnable"));
 
-        assertEquals(1, result);
-    }
+    assertEquals(1, result);
+  }
 
-    @Test
-    public void testIScheduledAtEveryMinute() throws NoSuchMethodException {
-        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+  @Test
+  public void testIScheduledAtEveryMinute() throws NoSuchMethodException {
+    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.process(
-                ScheduledMethodAnnotatedAtEveryMinute.class.getMethod("testRunnable")
-        );
+    long result =
+        subject.process(ScheduledMethodAnnotatedAtEveryMinute.class.getMethod("testRunnable"));
 
-        assertEquals(60, result);
-    }
+    assertEquals(60, result);
+  }
 
-    @Test
-    public void testScheduledAtVeryHour() throws NoSuchMethodException {
-        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+  @Test
+  public void testScheduledAtVeryHour() throws NoSuchMethodException {
+    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.process(
-                ScheduledMethodAnnotatedAtEveryHour.class.getMethod("testRunnable")
-        );
+    long result =
+        subject.process(ScheduledMethodAnnotatedAtEveryHour.class.getMethod("testRunnable"));
 
-        assertEquals(3600, result);
-    }
+    assertEquals(3600, result);
+  }
 
-    @Test
-    public void testScheduledAtVery2Seconds() throws NoSuchMethodException {
-        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+  @Test
+  public void testScheduledAtVery2Seconds() throws NoSuchMethodException {
+    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.process(
-                ScheduledMethodAnnotatedAtEvery2Seconds.class.getMethod("testRunnable")
-        );
+    long result =
+        subject.process(ScheduledMethodAnnotatedAtEvery2Seconds.class.getMethod("testRunnable"));
 
-        assertEquals(2, result);
-    }
+    assertEquals(2, result);
+  }
 
-    @Test
-    public void testNoAnnotation() throws NoSuchMethodException {
-        TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+  @Test
+  public void testNoAnnotation() throws NoSuchMethodException {
+    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
 
-        long result = subject.process(
-                NotAnnotated.class.getMethod("testRunnable")
-        );
+    long result = subject.process(NotAnnotated.class.getMethod("testRunnable"));
 
-        assertEquals(1, result);
-    }
+    assertEquals(1, result);
+  }
 
-    static class ScheduledMethodAnnotatedAtEverySecond {
+  static class ScheduledMethodAnnotatedAtEverySecond {
 
-        @EverySecond
-        public void testRunnable() {
-        }
-    }
+    @EverySecond
+    public void testRunnable() {}
+  }
 
-    static class ScheduledMethodAnnotatedAtEveryMinute {
+  static class ScheduledMethodAnnotatedAtEveryMinute {
 
-        @EveryMinute
-        public void testRunnable() {
-        }
-    }
+    @EveryMinute
+    public void testRunnable() {}
+  }
 
-    static class ScheduledMethodAnnotatedAtEveryHour {
+  static class ScheduledMethodAnnotatedAtEveryHour {
 
-        @EveryHour
-        public void testRunnable() {
-        }
-    }
+    @EveryHour
+    public void testRunnable() {}
+  }
 
-    static class ScheduledMethodAnnotatedAtEvery2Seconds {
+  static class ScheduledMethodAnnotatedAtEvery2Seconds {
 
-        @Every(period = 2, timeUnit = TimeUnit.SECONDS)
-        public void testRunnable() {
-        }
-    }
+    @Every(period = 2, timeUnit = TimeUnit.SECONDS)
+    public void testRunnable() {}
+  }
 
-    static class NotAnnotated {
+  static class NotAnnotated {
 
-        public void testRunnable() {
-        }
-    }
+    public void testRunnable() {}
+  }
 }
