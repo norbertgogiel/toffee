@@ -1,12 +1,13 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
+import com.vangogiel.toffee.annotations.ScheduledFrom;
+import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.time.LocalTime;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 public class IntervalScheduledTime {
 

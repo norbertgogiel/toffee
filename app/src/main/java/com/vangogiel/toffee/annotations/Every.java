@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee.annotations;
+package com.vangogiel.toffee.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
