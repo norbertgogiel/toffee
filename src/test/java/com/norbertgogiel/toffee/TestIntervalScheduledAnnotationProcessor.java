@@ -49,6 +49,21 @@ public class TestIntervalScheduledAnnotationProcessor {
     assertTrue(result.getDelayToShutdown() > 0);
   }
 
+  @Test
+  public void testScheduledInTheFutureBeforeMidnight() throws NoSuchMethodException {
+    IntervalScheduledAnnotationProcessor subject =
+        new IntervalScheduledAnnotationProcessor(mockTimeParser);
+    when(mockTimeParser.validateAndParse("23:59:58")).thenReturn(LocalTime.of(23, 59, 58));
+    when(mockTimeParser.validateAndParse("23:59:59")).thenReturn(LocalTime.of(23, 59, 59));
+
+    IntervalScheduledTime result =
+        subject.process(ScheduleInTheFutureBeforeMidnight.class.getMethod("testRunnable"));
+
+    assertTrue(result.getDelayToStart() > 0);
+    assertTrue(result.getDelayToShutdown() > 0);
+    assertEquals(1, result.getDelayToShutdown() - result.getDelayToStart());
+  }
+
   static class ScheduledInTheFuture {
 
     @ScheduledFrom(time = "01:11:22")
@@ -59,6 +74,13 @@ public class TestIntervalScheduledAnnotationProcessor {
   static class ScheduledNow {
 
     @ScheduledFrom(time = "00:00:00")
+    @ScheduledUntil(time = "23:59:59")
+    public void testRunnable() {}
+  }
+
+  static class ScheduleInTheFutureBeforeMidnight {
+
+    @ScheduledFrom(time = "23:59:58")
     @ScheduledUntil(time = "23:59:59")
     public void testRunnable() {}
   }
