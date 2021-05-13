@@ -1,56 +1,21 @@
-plugins {
-    id 'java'
-    id 'jacoco'
-    id 'com.diffplug.gradle.spotless' version '4.5.1'
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.3'
+    }
 }
-
-group 'com.norbertgogiel'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
-    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+task devBuild() {
+    finalizedBy ":app:appDevBuild", ":acceptance:cucumber"
 }
 
-jacocoTestReport {
-    reports {
-        html.enabled true
-        html.destination = file("${buildDir}/jacocoHtml")
-    }
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-       rule {
-           element = 'CLASS'
-           limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 1.00
-            }
-        }
-    }
-}
-
-spotless {
-    java {
-        importOrder("java", "javax", "com.norbertgogiel", "")
-        removeUnusedImports()
-        googleJavaFormat()
-    }
-}
-
-task devBuild {
-    finalizedBy spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
-}
-
-task ciBuild {
-    finalizedBy build, jacocoTestReport, jacocoTestCoverageVerification
+task ciBuild() {
+    finalizedBy ":app:appCiBuild", ":acceptance:cucumber"
 }
