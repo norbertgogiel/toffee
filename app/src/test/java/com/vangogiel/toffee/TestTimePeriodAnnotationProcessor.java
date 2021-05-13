@@ -7,7 +7,6 @@ import com.vangogiel.toffee.annotations.EveryHour;
 import com.vangogiel.toffee.annotations.EveryMinute;
 import com.vangogiel.toffee.annotations.EverySecond;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;

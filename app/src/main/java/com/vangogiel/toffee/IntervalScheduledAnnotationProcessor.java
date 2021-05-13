@@ -2,7 +2,6 @@ package com.vangogiel.toffee;
 
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
-
 import java.lang.reflect.Method;
 import java.time.LocalTime;
 

@@ -4,7 +4,6 @@ import com.vangogiel.toffee.annotations.Every;
 import com.vangogiel.toffee.annotations.EveryHour;
 import com.vangogiel.toffee.annotations.EveryMinute;
 import com.vangogiel.toffee.annotations.EverySecond;
-
 import java.lang.reflect.Method;
 
 public class TimePeriodAnnotationProcessor {

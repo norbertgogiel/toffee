@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.time.LocalTime;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
