@@ -1,7 +1,7 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
+import com.vangogiel.toffee.annotations.ScheduledFrom;
+import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

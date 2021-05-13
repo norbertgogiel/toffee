@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 import java.util.ArrayList;
 import java.util.Arrays;

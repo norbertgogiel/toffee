@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee.annotations;
+package com.vangogiel.toffee.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ScheduledUntil {
+public @interface ScheduledFrom {
 
   String time() default "";
 }

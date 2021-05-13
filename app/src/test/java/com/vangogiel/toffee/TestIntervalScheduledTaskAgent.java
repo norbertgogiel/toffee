@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;

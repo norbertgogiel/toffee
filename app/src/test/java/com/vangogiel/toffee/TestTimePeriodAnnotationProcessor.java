@@ -1,11 +1,11 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.norbertgogiel.toffee.annotations.Every;
-import com.norbertgogiel.toffee.annotations.EveryHour;
-import com.norbertgogiel.toffee.annotations.EveryMinute;
-import com.norbertgogiel.toffee.annotations.EverySecond;
+import com.vangogiel.toffee.annotations.Every;
+import com.vangogiel.toffee.annotations.EveryHour;
+import com.vangogiel.toffee.annotations.EveryMinute;
+import com.vangogiel.toffee.annotations.EverySecond;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;

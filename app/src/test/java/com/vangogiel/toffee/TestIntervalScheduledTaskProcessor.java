@@ -1,4 +1,4 @@
-package com.norbertgogiel.toffee;
+package com.vangogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import com.norbertgogiel.toffee.annotations.ScheduledFrom;
-import com.norbertgogiel.toffee.annotations.ScheduledUntil;
+import com.vangogiel.toffee.annotations.ScheduledFrom;
+import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;

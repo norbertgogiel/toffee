@@ -3,8 +3,8 @@ plugins {
     id 'jacoco'
     id 'com.diffplug.gradle.spotless' version '4.5.1'
 }
-group 'com.norbertgogiel'
-version '1.0-SNAPSHOT'
+group 'com.vangogiel.toffee'
+version '1.0.0-SNAPSHOT'
 
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
@@ -39,7 +39,7 @@ jacocoTestCoverageVerification {
 
 spotless {
     java {
-        importOrder("java", "javax", "com.norbertgogiel", "")
+        importOrder("java", "javax", "com.vangogiel", "")
         removeUnusedImports()
         googleJavaFormat()
     }
