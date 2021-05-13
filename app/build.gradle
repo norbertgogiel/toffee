@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'com.diffplug.gradle.spotless' version '4.5.1'
+}
+group 'com.norbertgogiel'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+    testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testImplementation group: 'com.google.googlejavaformat', name: 'google-java-format', version: '1.7'
+}
+
+repositories {
+    mavenCentral()
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+        html.destination = file("${buildDir}/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 1.00
+            }
+        }
+    }
+}
+
+spotless {
+    java {
+        importOrder("java", "javax", "com.norbertgogiel", "")
+        removeUnusedImports()
+        googleJavaFormat()
+    }
+}
+
+task appDevBuild {
+    finalizedBy clean, spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
+}
+
+task appCiBuild {
+    finalizedBy clean, build, jacocoTestReport, jacocoTestCoverageVerification
+}

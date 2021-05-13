@@ -26,21 +26,39 @@ public class TestTimeParser {
   }
 
   @Test
-  public void testHourOutOfRange() {
+  public void testHourLargerThanMax() {
     TimeParser subject = new TimeParser();
     assertThrows(DateTimeException.class, () -> subject.validateAndParse("24:59:59"));
   }
 
   @Test
-  public void testMinuteOutOfRange() {
+  public void testHourLessThanZero() {
+    TimeParser subject = new TimeParser();
+    assertThrows(DateTimeException.class, () -> subject.validateAndParse("-01:59:59"));
+  }
+
+  @Test
+  public void testMinuteLargerThanMax() {
     TimeParser subject = new TimeParser();
     assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:60:59"));
   }
 
   @Test
-  public void testSecondOutOfRange() {
+  public void testMinuteLessThanZero() {
+    TimeParser subject = new TimeParser();
+    assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:-01:59"));
+  }
+
+  @Test
+  public void testSecondLargerThanMax() {
     TimeParser subject = new TimeParser();
     assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:59:60"));
+  }
+
+  @Test
+  public void testSecondLessThanZero() {
+    TimeParser subject = new TimeParser();
+    assertThrows(DateTimeException.class, () -> subject.validateAndParse("23:59:-01"));
   }
 
   @Test
