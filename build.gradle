@@ -1,12 +1,90 @@
-buildscript {
+plugins {
+    id 'com.diffplug.spotless' version '5.1.2'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.codearte.nexus-staging' version '0.30.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'com.diffplug.spotless'
+
+    group = 'com.vangogiel.toffee'
+    version = '1.0.0-SNAPSHOT'
+
     repositories {
-        google()
-        jcenter()
+        mavenCentral()
+    }
+
+    spotless {
+        java {
+            importOrder("java", "javax", "com.vangogiel", "")
+            removeUnusedImports()
+            googleJavaFormat()
+        }
     }
 }
 
-repositories {
-    mavenCentral()
+subprojects {
+    if (project.name == 'acceptance') return
+
+    configurations {
+        deployerJars
+    }
+
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = project.group
+                artifactId = "toffee"
+                version = project.version
+                from components.java
+                pom {
+                    name = project.name
+                    description = 'Library to enable interval scheduled task execution'
+                    url = 'https://github.com/vangogiel/toffee'
+                    developers {
+                        developer {
+                            id = "vangogiel"
+                            name = 'Norbert Gogiel'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/vangogiel/toffee.git'
+                        developerConnection = 'scm:git:ssh://git@github.com/vangogiel/toffee.git'
+                        url = 'https://github.com/vangogiel/toffee'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "mavencentral"
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username System.getenv('SONATYPE_NEXUS_USERNAME')
+                    password System.getenv('SONATYPE_NEXUS_PASSWORD')
+                }
+            }
+        }
+        signing {
+            def signingKey = System.getenv('GPG_SIGNING_SUB_KEY')
+            def signingPassword = System.getenv('GPG_SIGNING_PASSWORD')
+            if (signingKey != null && signingPassword != null) {
+                useInMemoryPgpKeys(signingKey.trim(), signingPassword.trim())
+            }
+            sign publishing.publications.mavenJava
+        }
+    }
+    nexusStaging {
+        serverUrl = "https://s01.oss.sonatype.org/service/local/"
+        username System.getenv('SONATYPE_NEXUS_USERNAME')
+        password System.getenv('SONATYPE_NEXUS_PASSWORD')
+    }
 }
 
 task devBuild() {
