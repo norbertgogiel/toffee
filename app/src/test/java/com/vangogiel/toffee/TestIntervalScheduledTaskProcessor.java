@@ -1,7 +1,6 @@
 package com.vangogiel.toffee;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -55,26 +54,6 @@ public class TestIntervalScheduledTaskProcessor {
   }
 
   @Test
-  public void testScheduledThrowsException() {
-    IntervalScheduledTaskProcessor subject =
-        new IntervalScheduledTaskProcessor(
-            mockRegisteredAgents,
-            mockTimePeriodAnnotationProcessor,
-            mockDelayCalculator,
-            mockAgentProvider);
-
-    assertThrows(
-        IllegalStateException.class,
-        () ->
-            subject.tryScheduleTask(
-                ScheduledMethodThrowsException.class,
-                ScheduledMethodThrowsException.class.getMethod("testRunnable")));
-    verifyZeroInteractions(mockAgentProvider);
-    verifyZeroInteractions(mockAgent);
-    verifyZeroInteractions(mockRegisteredAgents);
-  }
-
-  @Test
   public void testAnnotatedCorrectly() {
     when(mockAgentProvider.get()).thenReturn(mockAgent);
     IntervalScheduledTaskProcessor subject =
@@ -125,23 +104,6 @@ public class TestIntervalScheduledTaskProcessor {
     verifyZeroInteractions(mockAgentProvider);
   }
 
-  @Test
-  public void testAnnotatedAnnotatedCorrectlyNotRunnable() {
-    when(mockAgentProvider.get()).thenReturn(mockAgent);
-    IntervalScheduledTaskProcessor subject =
-        new IntervalScheduledTaskProcessor(
-            mockRegisteredAgents,
-            mockTimePeriodAnnotationProcessor,
-            mockDelayCalculator,
-            mockAgentProvider);
-    assertDoesNotThrow(
-        () ->
-            subject.tryScheduleTask(
-                TestAnnotatedAnnotatedCorrectlyNotRunnable.class,
-                TestAnnotatedAnnotatedCorrectlyNotRunnable.class.getMethod("testRunnable")));
-    verifyZeroInteractions(mockAgentProvider);
-  }
-
   static class ScheduledMethodWithAnnotatedFullTime {
 
     @ScheduledFrom(time = "01:11:22")
@@ -155,7 +117,7 @@ public class TestIntervalScheduledTaskProcessor {
 
     @ScheduledFrom(time = "00:00:00")
     @ScheduledUntil(time = "23:59:59")
-    public Runnable testRunnable() throws Exception {
+    public void testRunnable() throws Exception {
       throw new Exception("Evil");
     }
   }
