@@ -31,12 +31,8 @@ public class IntervalScheduledTaskProcessor {
   private IntervalScheduledTask processRawAndWrap(Class<?> source, Method method) {
     long period = timePeriodAnnotationProcessor.process(method);
     IntervalScheduledTime delay = delayCalculator.process(method);
-    try {
-      Runnable runnable = (Runnable) method.invoke(source.getDeclaredConstructor().newInstance());
-      return new IntervalScheduledTask(runnable, delay, period, TimeUnit.SECONDS);
-    } catch (Exception e) {
-      throw new IllegalStateException("Failed to create a legal runnable", e);
-    }
+    Runnable runnable = new ScheduledTaskRunnable(source, method);
+    return new IntervalScheduledTask(runnable, delay, period, TimeUnit.SECONDS);
   }
 
   private void schedule(IntervalScheduledTask task) {
@@ -47,7 +43,6 @@ public class IntervalScheduledTaskProcessor {
 
   private boolean isMethodAValidSchedule(Method method) {
     return method.isAnnotationPresent(ScheduledFrom.class)
-        && method.isAnnotationPresent(ScheduledUntil.class)
-        && method.getReturnType() == Runnable.class;
+        && method.isAnnotationPresent(ScheduledUntil.class);
   }
 }

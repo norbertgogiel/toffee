@@ -88,9 +88,9 @@ subprojects {
 }
 
 task devBuild() {
-    finalizedBy ":app:appDevBuild", ":acceptance:cucumber"
+    finalizedBy ":app:clean", ":app:appDevBuild", ":acceptance:clean", ":acceptance:cucumber"
 }
 
 task ciBuild() {
-    finalizedBy ":app:appCiBuild", ":acceptance:cucumber"
+    finalizedBy ":app:clean", ":app:appCiBuild", ":acceptance:clean", ":acceptance:cucumber"
 }

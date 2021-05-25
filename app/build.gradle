@@ -29,9 +29,9 @@ jacocoTestCoverageVerification {
 }
 
 task appDevBuild {
-    finalizedBy clean, spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
+    finalizedBy spotlessJavaApply, build, jacocoTestReport, jacocoTestCoverageVerification
 }
 
 task appCiBuild {
-    finalizedBy clean, build, jacocoTestReport, jacocoTestCoverageVerification
+    finalizedBy build, jacocoTestReport, jacocoTestCoverageVerification
 }
