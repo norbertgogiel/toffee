@@ -16,7 +16,7 @@ public class ScheduledAnnotationSpecSteps {
     static final AtomicInteger atomicInteger = new AtomicInteger();
 
     @Given("a task that is set to run all the time every second")
-    public void basicContextWithATaskScheduledBeforeMidnight() {
+    public void basicContextWithContinuousTask() {
         toffeeContext = new ToffeeContext(IntervalScheduled.class);
     }
 
@@ -26,12 +26,12 @@ public class ScheduledAnnotationSpecSteps {
     }
 
     @Then("I verify the task was set up")
-    public void verifyThread() {
+    public void verifyTaskIsSetUp() {
         assertEquals(1, toffeeContext.getTotalCorePoolSize());
     }
 
     @And("I verify the task has run {int} times")
-    public void verifyTask(int noOfInvocations) {
+    public void verifyTaskHasRun(int noOfInvocations) {
         assertEquals(noOfInvocations, atomicInteger.get());
     }
 }
