@@ -47,4 +47,16 @@ public class ContextSetupSteps {
                 TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class
         );
     }
+
+    @Given("five tasks scheduled to run at different times and at different rates")
+    public void basicContextWithFiveTasks() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(
+                TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeEveryMinute.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeEveryHour.class,
+                TestClasses.IntervalScheduledToRunInTheFutureAfterMidnight.class
+        );
+    }
 }
