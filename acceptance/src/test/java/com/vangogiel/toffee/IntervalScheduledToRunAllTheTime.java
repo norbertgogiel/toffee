@@ -6,7 +6,7 @@ import com.vangogiel.toffee.annotations.ScheduledUntil;
 
 import java.util.concurrent.TimeUnit;
 
-public class IntervalScheduled {
+public class IntervalScheduledToRunAllTheTime {
 
     @ScheduledFrom(time = "00:00:00")
     @ScheduledUntil(time = "23:59:59")

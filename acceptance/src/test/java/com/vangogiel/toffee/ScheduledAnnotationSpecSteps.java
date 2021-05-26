@@ -17,7 +17,14 @@ public class ScheduledAnnotationSpecSteps {
 
     @Given("a task that is set to run all the time every second")
     public void basicContextWithContinuousTask() {
-        toffeeContext = new ToffeeContext(IntervalScheduled.class);
+       atomicInteger.set(0);
+       toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTime.class);
+    }
+
+    @Given("a task that is set to run in the future")
+    public void basicContextFutureTask() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(IntervalScheduledToRunInTheFuture.class);
     }
 
     @When("I wait {int} seconds")
@@ -32,6 +39,7 @@ public class ScheduledAnnotationSpecSteps {
 
     @And("I verify the task has run {int} times")
     public void verifyTaskHasRun(int noOfInvocations) {
+        toffeeContext.shutDownAllTasksNow();
         assertEquals(noOfInvocations, atomicInteger.get());
     }
 }

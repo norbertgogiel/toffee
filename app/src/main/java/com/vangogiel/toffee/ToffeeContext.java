@@ -2,6 +2,7 @@ package com.vangogiel.toffee;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class ToffeeContext {
@@ -28,6 +29,15 @@ public class ToffeeContext {
 
   public int getTotalCurrentPoolSize() {
     return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
+  }
+
+  public void shutDownAllTasksNow() {
+    for (Iterator<IntervalScheduledTaskAgent> agents = registeredAgents.iterator();
+        agents.hasNext(); ) {
+      IntervalScheduledTaskAgent agent = agents.next();
+      agent.shutdownNow();
+      agents.remove();
+    }
   }
 
   private void processSources(Class<?>... sources) {
