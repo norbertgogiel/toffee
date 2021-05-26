@@ -39,6 +39,12 @@ public class ScheduledAnnotationSpecSteps {
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureAfterMidnight.class);
     }
 
+    @Given("a task that is set to run in the future over midnight")
+    public void basicContextFutureTaskOverMidnight() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureOverMidnight.class);
+    }
+
     @When("I wait {int} seconds")
     public void wait(int wait) throws InterruptedException {
         Thread.sleep(wait * 1000L);

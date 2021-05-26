@@ -45,4 +45,13 @@ public class TestClasses {
             ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
         }
     }
+
+    static class IntervalScheduledToRunInTheFutureOverMidnight{
+
+        @ScheduledFrom(time = "23:58:59")
+        @ScheduledUntil(time = "00:00:10")
+        public void getSimpleSchedule() {
+            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+        }
+    }
 }
