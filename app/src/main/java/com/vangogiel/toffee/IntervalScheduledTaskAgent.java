@@ -21,6 +21,11 @@ class IntervalScheduledTaskAgent {
     return taskAgent.getPoolSize();
   }
 
+  public void shutdownNow() {
+    taskAgent.shutdownNow();
+    shutdownAgent.shutdownNow();
+  }
+
   public void submit(IntervalScheduledTask task) {
     Future<?> future =
         taskAgent.scheduleAtFixedRate(

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.vangogiel.toffee.annotations.ScheduledFrom;
+import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.io.IOException;
 import org.junit.Test;
 import org.junit.jupiter.api.function.ThrowingSupplier;
@@ -39,7 +41,7 @@ public class TestToffeeContext {
 
   @Test
   public void testIncludeIntervalScheduledNonNullClassWithMethod() {
-    assertDoesNotThrow(() -> new ToffeeContext(IntervalScheduledTestClass.class));
+    assertDoesNotThrow(() -> new ToffeeContext(IntervalScheduledExceptionClass.class));
   }
 
   @Test
@@ -47,20 +49,36 @@ public class TestToffeeContext {
     assertDoesNotThrow(
         () ->
             new ToffeeContext(
-                IntervalScheduledTestClass.class, AlternativeIntervalScheduledTestClass.class));
+                IntervalScheduledTestClass.class,
+                AlternativeIntervalScheduledExceptionClass.class));
+  }
+
+  @Test
+  public void testShutDownAllTasksNow() {
+    ToffeeContext subject = new ToffeeContext(IntervalScheduledTestClass.class);
+    assertEquals(1, subject.getTotalCorePoolSize());
+    subject.shutDownAllTasksNow();
+    assertEquals(0, subject.getTotalCorePoolSize());
+  }
+
+  static class IntervalScheduledExceptionClass {
+
+    public Runnable testRunnable() throws IOException {
+      throw new IOException("evil");
+    }
+  }
+
+  static class AlternativeIntervalScheduledExceptionClass {
+
+    public Runnable testRunnable() throws IOException {
+      throw new IOException("evil");
+    }
   }
 
   static class IntervalScheduledTestClass {
 
-    public Runnable testRunnable() throws IOException {
-      throw new IOException("evil");
-    }
-  }
-
-  static class AlternativeIntervalScheduledTestClass {
-
-    public Runnable testRunnable() throws IOException {
-      throw new IOException("evil");
-    }
+    @ScheduledFrom(time = "00:00:00")
+    @ScheduledUntil(time = "00:00:01")
+    public void testRunnable() throws IOException {}
   }
 }
