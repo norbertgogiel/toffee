@@ -11,26 +11,26 @@ import static org.junit.Assert.assertEquals;
 
 public class ScheduledAnnotationSpecSteps {
 
-    private ToffeeContext toffeeContext;
-
     static final AtomicInteger atomicInteger = new AtomicInteger();
+
+    private ToffeeContext toffeeContext;
 
     @Given("a task that is set to run all the time every second")
     public void basicContextWithContinuousTask() {
        atomicInteger.set(0);
-       toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTimeEverySecond.class);
+       toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class);
     }
 
     @Given("a task that is set to run all the time every 3 seconds")
     public void basicContextWithContinuousTaskEvery3Seconds() {
         atomicInteger.set(0);
-        toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
     }
 
     @Given("a task that is set to run in the future")
     public void basicContextFutureTask() {
         atomicInteger.set(0);
-        toffeeContext = new ToffeeContext(IntervalScheduledToRunInTheFuture.class);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureBeforeMidnight.class);
     }
 
     @When("I wait {int} seconds")
