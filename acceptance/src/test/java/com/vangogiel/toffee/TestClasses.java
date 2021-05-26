@@ -14,17 +14,18 @@ public class TestClasses {
         @ScheduledUntil(time = "23:59:59")
         @Every(period = 3, timeUnit = TimeUnit.SECONDS)
         public void getSimpleScheduleWith3SecondPeriod() {
-            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+            ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
 
-    static class IntervalScheduledToRunAllTheTimeEverySecond {
+    static class
+    IntervalScheduledToRunAllTheTimeEverySecond {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @Every(period = 1, timeUnit = TimeUnit.SECONDS)
         public void getSimpleSchedule() {
-            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+            ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
 
@@ -33,7 +34,7 @@ public class TestClasses {
         @ScheduledFrom(time = "23:59:58")
         @ScheduledUntil(time = "23:59:59")
         public void getSimpleSchedule() {
-            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+            ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
 
@@ -42,7 +43,7 @@ public class TestClasses {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "00:00:10")
         public void getSimpleSchedule() {
-            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+            ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
 
@@ -51,7 +52,7 @@ public class TestClasses {
         @ScheduledFrom(time = "23:58:59")
         @ScheduledUntil(time = "00:00:10")
         public void getSimpleSchedule() {
-            ScheduledAnnotationSpecSteps.atomicInteger.getAndIncrement();
+            ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
 }
