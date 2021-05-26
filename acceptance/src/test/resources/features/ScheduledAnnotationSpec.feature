@@ -15,7 +15,14 @@ Feature: Interval Scheduled Tasks
     And I verify the task has run 2 times in total
 
   Scenario: Task is set to run in the future before midnight
-    Given a task that is set to run in the future
+    Given a task that is set to run in the future before midnight
+    When I verify the task was set up
+    Then I wait 3 seconds
+    And I shutdown all tasks now
+    And I verify the task has run 0 times in total
+
+  Scenario: Task is set to run in the future after midnight
+    Given a task that is set to run in the future after midnight
     When I verify the task was set up
     Then I wait 3 seconds
     And I shutdown all tasks now

@@ -27,10 +27,16 @@ public class ScheduledAnnotationSpecSteps {
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
     }
 
-    @Given("a task that is set to run in the future")
-    public void basicContextFutureTask() {
+    @Given("a task that is set to run in the future before midnight")
+    public void basicContextFutureTaskBeforeMidnight() {
         atomicInteger.set(0);
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureBeforeMidnight.class);
+    }
+
+    @Given("a task that is set to run in the future after midnight")
+    public void basicContextFutureTaskAfterMidnight() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureAfterMidnight.class);
     }
 
     @When("I wait {int} seconds")
