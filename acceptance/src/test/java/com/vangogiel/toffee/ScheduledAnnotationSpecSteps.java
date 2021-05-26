@@ -18,7 +18,13 @@ public class ScheduledAnnotationSpecSteps {
     @Given("a task that is set to run all the time every second")
     public void basicContextWithContinuousTask() {
        atomicInteger.set(0);
-       toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTime.class);
+       toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTimeEverySecond.class);
+    }
+
+    @Given("a task that is set to run all the time every 3 seconds")
+    public void basicContextWithContinuousTaskEvery3Seconds() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
     }
 
     @Given("a task that is set to run in the future")
