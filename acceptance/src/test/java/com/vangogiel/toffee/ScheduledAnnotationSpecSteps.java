@@ -32,14 +32,23 @@ public class ScheduledAnnotationSpecSteps {
         Thread.sleep(wait * 1000L);
     }
 
+    @When("again I wait {int} seconds")
+    public void waitAgain(int wait) throws InterruptedException {
+        wait(wait);
+    }
+
     @Then("I verify the task was set up")
     public void verifyTaskIsSetUp() {
         assertEquals(1, toffeeContext.getTotalCorePoolSize());
     }
 
-    @And("I verify the task has run {int} times")
+    @And("I verify the task has run {int} times in total")
     public void verifyTaskHasRun(int noOfInvocations) {
-        toffeeContext.shutDownAllTasksNow();
         assertEquals(noOfInvocations, atomicInteger.get());
+    }
+
+    @And("I shutdown all tasks now")
+    public void shutDownAllTasksNow() {
+        toffeeContext.shutDownAllTasksNow();
     }
 }
