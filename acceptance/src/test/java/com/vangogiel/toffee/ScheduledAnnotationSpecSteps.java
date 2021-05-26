@@ -45,6 +45,15 @@ public class ScheduledAnnotationSpecSteps {
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureOverMidnight.class);
     }
 
+    @Given("two tasks scheduled to run all the time at different rates")
+    public void basicContextWithTwoTasks() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(
+                TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class
+        );
+    }
+
     @When("I wait {int} seconds")
     public void wait(int wait) throws InterruptedException {
         Thread.sleep(wait * 1000L);
@@ -58,6 +67,11 @@ public class ScheduledAnnotationSpecSteps {
     @Then("I verify the task was set up")
     public void verifyTaskIsSetUp() {
         assertEquals(1, toffeeContext.getTotalCorePoolSize());
+    }
+
+    @Then("I verify {int} tasks were set up")
+    public void verifyNumerousTasksAreSetUp(int count) {
+        assertEquals(count, toffeeContext.getTotalCorePoolSize());
     }
 
     @And("I verify the task has run {int} times in total")
