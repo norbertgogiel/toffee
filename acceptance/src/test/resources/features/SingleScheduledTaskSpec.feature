@@ -38,7 +38,7 @@ Feature: Scheduled single tasks
   Scenario: Task is scheduled to run and all tasks are shut down correctly
     Given a task that is set to run all the time every second
     When I verify the task was set up
-    Then I wait 3 seconds
+    Then I wait 3.5 seconds
     And I shutdown all tasks now
     And I verify the tasks have run 4 times in total
     Then again I wait 3 seconds

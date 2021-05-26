@@ -8,13 +8,13 @@ import static org.junit.Assert.assertEquals;
 
 public class TaskVerificationSteps {
 
-    @When("I wait {int} seconds")
-    public void wait(int wait) throws InterruptedException {
-        Thread.sleep(wait * 1000L);
+    @When("I wait {double} seconds")
+    public void wait(double wait) throws InterruptedException {
+        Thread.sleep((long)(wait * 1000L));
     }
 
-    @When("again I wait {int} seconds")
-    public void waitAgain(int wait) throws InterruptedException {
+    @When("again I wait {double} seconds")
+    public void waitAgain(double wait) throws InterruptedException {
         wait(wait);
     }
 
