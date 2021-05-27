@@ -29,12 +29,20 @@ subprojects {
 subprojects {
     if (project.name == 'acceptance') return
 
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
+
     configurations {
         deployerJars
     }
 
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
 
     publishing {
         publications {
