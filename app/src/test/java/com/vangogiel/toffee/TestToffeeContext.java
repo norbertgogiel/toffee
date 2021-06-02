@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 
+/** Test class for {@link ToffeeContext} */
 public class TestToffeeContext {
 
   @Test

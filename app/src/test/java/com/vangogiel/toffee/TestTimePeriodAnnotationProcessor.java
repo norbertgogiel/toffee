@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+/** Test class for {@link TimePeriodAnnotationProcessor}. */
 public class TestTimePeriodAnnotationProcessor {
 
   @Before

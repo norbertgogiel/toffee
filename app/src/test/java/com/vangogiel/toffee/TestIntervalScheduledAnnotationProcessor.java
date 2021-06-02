@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/** Test class for {@link TestIntervalScheduledAnnotationProcessor}. */
 public class TestIntervalScheduledAnnotationProcessor {
 
   @Mock private TimeParser mockTimeParser;

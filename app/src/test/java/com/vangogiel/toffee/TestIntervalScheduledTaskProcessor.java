@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+/** Test class for {@link IntervalScheduledTaskProcessor}. */
 public class TestIntervalScheduledTaskProcessor {
 
   @Mock private TimePeriodAnnotationProcessor mockTimePeriodAnnotationProcessor;
