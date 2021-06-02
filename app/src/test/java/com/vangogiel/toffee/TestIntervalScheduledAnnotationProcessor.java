@@ -12,10 +12,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/** Test class for {@link TestIntervalScheduledAnnotationProcessor}. */
+/** Test class for {@link IntervalScheduledAnnotationProcessor}. */
 public class TestIntervalScheduledAnnotationProcessor {
 
   @Mock private TimeParser mockTimeParser;
+  @Mock private LocalTimeService localTimeService;
 
   @Before
   public void setUp() {
@@ -24,8 +25,9 @@ public class TestIntervalScheduledAnnotationProcessor {
 
   @Test
   public void testScheduledInTheFuture() throws NoSuchMethodException {
+    when(localTimeService.now()).thenReturn(LocalTime.of(11, 11, 11));
     IntervalScheduledAnnotationProcessor subject =
-        new IntervalScheduledAnnotationProcessor(mockTimeParser);
+        new IntervalScheduledAnnotationProcessor(mockTimeParser, localTimeService);
     when(mockTimeParser.validateAndParse("01:11:22")).thenReturn(LocalTime.of(1, 11, 22));
     when(mockTimeParser.validateAndParse("01:11:23")).thenReturn(LocalTime.of(1, 11, 23));
 
@@ -39,8 +41,9 @@ public class TestIntervalScheduledAnnotationProcessor {
 
   @Test
   public void testScheduledNow() throws NoSuchMethodException {
+    when(localTimeService.now()).thenReturn(LocalTime.of(11, 11, 11));
     IntervalScheduledAnnotationProcessor subject =
-        new IntervalScheduledAnnotationProcessor(mockTimeParser);
+        new IntervalScheduledAnnotationProcessor(mockTimeParser, localTimeService);
     when(mockTimeParser.validateAndParse("00:00:00")).thenReturn(LocalTime.of(0, 0, 0));
     when(mockTimeParser.validateAndParse("23:59:59")).thenReturn(LocalTime.of(23, 59, 59));
 
@@ -52,8 +55,9 @@ public class TestIntervalScheduledAnnotationProcessor {
 
   @Test
   public void testScheduledInTheFutureBeforeMidnight() throws NoSuchMethodException {
+    when(localTimeService.now()).thenReturn(LocalTime.of(11, 11, 11));
     IntervalScheduledAnnotationProcessor subject =
-        new IntervalScheduledAnnotationProcessor(mockTimeParser);
+        new IntervalScheduledAnnotationProcessor(mockTimeParser, localTimeService);
     when(mockTimeParser.validateAndParse("23:59:58")).thenReturn(LocalTime.of(23, 59, 58));
     when(mockTimeParser.validateAndParse("23:59:59")).thenReturn(LocalTime.of(23, 59, 59));
 
@@ -63,6 +67,21 @@ public class TestIntervalScheduledAnnotationProcessor {
     assertTrue(result.getDelayToStart() > 0);
     assertTrue(result.getDelayToShutdown() > 0);
     assertEquals(1, result.getDelayToShutdown() - result.getDelayToStart());
+  }
+
+  @Test
+  public void testScheduleInTwoSeconds() throws NoSuchMethodException {
+    when(localTimeService.now()).thenReturn(LocalTime.of(11, 11, 11));
+    IntervalScheduledAnnotationProcessor subject =
+        new IntervalScheduledAnnotationProcessor(mockTimeParser, localTimeService);
+    when(mockTimeParser.validateAndParse("11:11:13")).thenReturn(LocalTime.of(11, 11, 13));
+    when(mockTimeParser.validateAndParse("11:11:15")).thenReturn(LocalTime.of(11, 11, 15));
+
+    IntervalScheduledTime result =
+        subject.process(ScheduleInTwoSeconds.class.getMethod("testRunnable"));
+
+    assertTrue(result.getDelayToStart() >= 2);
+    assertTrue(result.getDelayToShutdown() >= 4);
   }
 
   static class ScheduledInTheFuture {
@@ -83,6 +102,13 @@ public class TestIntervalScheduledAnnotationProcessor {
 
     @ScheduledFrom(time = "23:59:58")
     @ScheduledUntil(time = "23:59:59")
+    public void testRunnable() {}
+  }
+
+  static class ScheduleInTwoSeconds {
+
+    @ScheduledFrom(time = "11:11:13")
+    @ScheduledUntil(time = "11:11:15")
     public void testRunnable() {}
   }
 }

@@ -21,14 +21,17 @@ import java.util.IllegalFormatPrecisionException;
 public class IntervalScheduledAnnotationProcessor {
 
   private final TimeParser timeParser;
+  private final LocalTimeService localTimeService;
 
   /**
    * Create a new IntervalScheduledAnnotationProcessor.
    *
    * @param timeParser requires {@link TimeParser} dependency
    */
-  public IntervalScheduledAnnotationProcessor(TimeParser timeParser) {
+  public IntervalScheduledAnnotationProcessor(
+      TimeParser timeParser, LocalTimeService localTimeService) {
     this.timeParser = timeParser;
+    this.localTimeService = localTimeService;
   }
 
   /**
@@ -63,9 +66,9 @@ public class IntervalScheduledAnnotationProcessor {
     LocalTime until = timeParser.validateAndParse(rawUntil.time());
     long initDelay = calcRelativeToNow(from);
     long delayToShutdown = calcRelativeToNow(until);
-    if (LocalTime.now().compareTo(from) > 0) initDelay = 86400 + initDelay;
-    if (LocalTime.now().compareTo(until) < 0) {
-      if (LocalTime.now().compareTo(from) > 0) initDelay = 0;
+    if (localTimeService.now().compareTo(from) > 0) initDelay = 86400 + initDelay;
+    if (localTimeService.now().compareTo(until) < 0) {
+      if (localTimeService.now().compareTo(from) > 0) initDelay = 0;
     } else {
       delayToShutdown = 86400 + delayToShutdown;
     }
@@ -73,12 +76,12 @@ public class IntervalScheduledAnnotationProcessor {
   }
 
   /**
-   * Convert the given time into a delay to that time from {@link LocalTime#now()}.
+   * Convert the given time into a delay to that time from {@link LocalTimeService#now()}.
    *
    * @param time to calculate the delay from relative to now
    * @return delay from now to that time calculated as {@code long}
    */
   private long calcRelativeToNow(LocalTime time) {
-    return time.toSecondOfDay() - LocalTime.now().toSecondOfDay();
+    return time.toSecondOfDay() - localTimeService.now().toSecondOfDay();
   }
 }

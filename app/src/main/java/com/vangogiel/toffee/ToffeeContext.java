@@ -31,8 +31,9 @@ public class ToffeeContext {
     TimeParser timeParser = new TimeParser();
     TimePeriodAnnotationProcessor timePeriodAnnotationProcessor =
         new TimePeriodAnnotationProcessor();
+    LocalTimeService localTimeService = new LocalTimeService();
     IntervalScheduledAnnotationProcessor delayCalculator =
-        new IntervalScheduledAnnotationProcessor(timeParser);
+        new IntervalScheduledAnnotationProcessor(timeParser, localTimeService);
     IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
     intervalScheduledTaskProcessor =
         new IntervalScheduledTaskProcessor(
