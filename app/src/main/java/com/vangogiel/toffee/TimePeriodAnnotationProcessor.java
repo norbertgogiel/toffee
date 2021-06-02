@@ -27,8 +27,8 @@ public class TimePeriodAnnotationProcessor {
    *   <li>{@link Every}
    * </ul>
    *
-   * <p>Each annotation {@code EverySecond}, {@code EveryMinute} and {@code @EveryHour} is interpreted
-   * in seconds respectively.
+   * <p>Each annotation {@code EverySecond}, {@code EveryMinute} and {@code @EveryHour} is
+   * interpreted in seconds respectively.
    *
    * <p>An alternative annotation {@link Every} could be used to define a tailored period.
    *

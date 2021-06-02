@@ -39,8 +39,8 @@ public class IntervalScheduledAnnotationProcessor {
    * into a delay relative to the time the thread is running in. The server running will need to
    * calculate it into a delay from a perspective of when it is running.
    *
-   * <p>The delay is also normalised upon comparison of {@code LocalTime.now()} and the
-   * time of that particular schedule.
+   * <p>The delay is also normalised upon comparison of {@code LocalTime.now()} and the time of that
+   * particular schedule.
    *
    * <p>If the time now is greater than the time {@code ScheduledFrom}, but smaller than {@code
    * ScheduledUntil}, then the initial delay is set to 0 to start the task immediately. The delay to
