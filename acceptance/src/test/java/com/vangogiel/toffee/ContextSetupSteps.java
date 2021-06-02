@@ -4,6 +4,9 @@ import io.cucumber.java.en.Given;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Context setup steps for setting up context per scenario.
+ */
 public class ContextSetupSteps {
 
     public static AtomicInteger atomicInteger = new AtomicInteger();

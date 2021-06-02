@@ -7,6 +7,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
+/** Test class for {@link ScheduledTaskRunnable}. */
 public class TestScheduledTaskRunnable {
 
   private static final AtomicInteger atomicInteger = new AtomicInteger();

@@ -6,6 +6,9 @@ import com.vangogiel.toffee.annotations.ScheduledUntil;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Classes containing test subjects for BDD scenarios.
+ */
 public class TestClasses {
 
     static class IntervalScheduledToRunAllTheTimeEvery3Seconds {

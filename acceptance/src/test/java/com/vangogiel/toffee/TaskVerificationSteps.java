@@ -6,6 +6,9 @@ import io.cucumber.java.en.When;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Steps allowing to verify task runs per context setup.
+ */
 public class TaskVerificationSteps {
 
     @When("I wait {double} seconds")

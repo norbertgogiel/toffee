@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
+/** Test class for {@link IntervalScheduledTaskAgent}. */
 public class TestIntervalScheduledTaskAgent {
 
   @Test
