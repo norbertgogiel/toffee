@@ -12,16 +12,34 @@ public class ContextSetupSteps {
     public static AtomicInteger atomicInteger = new AtomicInteger();
     public static ToffeeContext toffeeContext;
 
-    @Given("a task that is set to run all the time every second")
+    @Given("a task set to run non-stop with every second custom annotation")
     public void basicContextWithContinuousTask() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeCustomEverySecond.class);
+    }
+
+    @Given("a task set to run non-stop with every 3-seconds annotation")
+    public void basicContextWithContinuousTaskEvery3Seconds() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
+    }
+
+    @Given("a task set to run non-stop with every second annotation")
+    public void basicContextWithEverySecondPeriodAnnotation() {
         atomicInteger.set(0);
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class);
     }
 
-    @Given("a task that is set to run all the time every 3 seconds")
-    public void basicContextWithContinuousTaskEvery3Seconds() {
+    @Given("a task set to run non-stop with every minute annotation")
+    public void basicContextWithEveryMinutePeriodAnnotation() {
         atomicInteger.set(0);
-        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEveryMinute.class);
+    }
+
+    @Given("a task set to run non-stop with every hour annotation")
+    public void basicContextWithEveryHourPeriodAnnotation() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunAllTheTimeEveryHour.class);
     }
 
     @Given("a task that is set to run in the future before midnight")
@@ -46,7 +64,7 @@ public class ContextSetupSteps {
     public void basicContextWithTwoTasks() {
         atomicInteger.set(0);
         toffeeContext = new ToffeeContext(
-                TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeCustomEverySecond.class,
                 TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class
         );
     }
@@ -55,10 +73,10 @@ public class ContextSetupSteps {
     public void basicContextWithFiveTasks() {
         atomicInteger.set(0);
         toffeeContext = new ToffeeContext(
-                TestClasses.IntervalScheduledToRunAllTheTimeEverySecond.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeCustomEverySecond.class,
                 TestClasses.IntervalScheduledToRunAllTheTimeEvery3Seconds.class,
-                TestClasses.IntervalScheduledToRunAllTheTimeEveryMinute.class,
-                TestClasses.IntervalScheduledToRunAllTheTimeEveryHour.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeCustomEveryMinute.class,
+                TestClasses.IntervalScheduledToRunAllTheTimeCustomEveryHour.class,
                 TestClasses.IntervalScheduledToRunInTheFutureAfterMidnight.class
         );
     }
