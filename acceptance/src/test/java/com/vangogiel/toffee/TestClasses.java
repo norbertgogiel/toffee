@@ -1,6 +1,9 @@
 package com.vangogiel.toffee;
 
 import com.vangogiel.toffee.annotations.Every;
+import com.vangogiel.toffee.annotations.EveryHour;
+import com.vangogiel.toffee.annotations.EveryMinute;
+import com.vangogiel.toffee.annotations.EverySecond;
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
 
@@ -21,7 +24,7 @@ public class TestClasses {
         }
     }
 
-    static class IntervalScheduledToRunAllTheTimeEverySecond {
+    static class IntervalScheduledToRunAllTheTimeCustomEverySecond {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
@@ -31,7 +34,7 @@ public class TestClasses {
         }
     }
 
-    static class IntervalScheduledToRunAllTheTimeEveryMinute {
+    static class IntervalScheduledToRunAllTheTimeCustomEveryMinute {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
@@ -41,11 +44,41 @@ public class TestClasses {
         }
     }
 
-    static class IntervalScheduledToRunAllTheTimeEveryHour {
+    static class IntervalScheduledToRunAllTheTimeCustomEveryHour {
 
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @Every(period = 1, timeUnit = TimeUnit.HOURS)
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunAllTheTimeEverySecond {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunAllTheTimeEveryMinute {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EveryMinute
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunAllTheTimeEveryHour {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EveryHour
         public void getSimpleSchedule() {
             ContextSetupSteps.atomicInteger.getAndIncrement();
         }
