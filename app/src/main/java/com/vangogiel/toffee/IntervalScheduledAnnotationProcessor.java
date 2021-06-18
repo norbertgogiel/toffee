@@ -21,17 +21,18 @@ import java.util.IllegalFormatPrecisionException;
 public class IntervalScheduledAnnotationProcessor {
 
   private final TimeParser timeParser;
-  private final LocalTimeService localTimeService;
+  private final LocalDateTimeService localDateTimeService;
 
   /**
    * Create a new IntervalScheduledAnnotationProcessor.
    *
-   * @param timeParser requires {@link TimeParser} dependency
+   * @param timeParser providing time parsing functionality
+   * @param localDateTimeService providing wrapped {@code LocalDateTime}
    */
   public IntervalScheduledAnnotationProcessor(
-      TimeParser timeParser, LocalTimeService localTimeService) {
+      TimeParser timeParser, LocalDateTimeService localDateTimeService) {
     this.timeParser = timeParser;
-    this.localTimeService = localTimeService;
+    this.localDateTimeService = localDateTimeService;
   }
 
   /**
@@ -66,9 +67,9 @@ public class IntervalScheduledAnnotationProcessor {
     LocalTime until = timeParser.validateAndParse(rawUntil.time());
     long initDelay = calcRelativeToNow(from);
     long delayToShutdown = calcRelativeToNow(until);
-    if (localTimeService.now().compareTo(from) > 0) initDelay = 86400 + initDelay;
-    if (localTimeService.now().compareTo(until) < 0) {
-      if (localTimeService.now().compareTo(from) > 0) initDelay = 0;
+    if (localDateTimeService.timeNow().compareTo(from) > 0) initDelay = 86400 + initDelay;
+    if (localDateTimeService.timeNow().compareTo(until) < 0) {
+      if (localDateTimeService.timeNow().compareTo(from) > 0) initDelay = 0;
     } else {
       delayToShutdown = 86400 + delayToShutdown;
     }
@@ -76,12 +77,13 @@ public class IntervalScheduledAnnotationProcessor {
   }
 
   /**
-   * Convert the given time into a delay to that time from {@link LocalTimeService#now()}.
+   * Convert the given time into a delay to that time from {@link
+   * com.vangogiel.toffee.LocalDateTimeService#timeNow()} ()}.
    *
    * @param time to calculate the delay from relative to now
    * @return delay from now to that time calculated as {@code long}
    */
   private long calcRelativeToNow(LocalTime time) {
-    return time.toSecondOfDay() - localTimeService.now().toSecondOfDay();
+    return time.toSecondOfDay() - localDateTimeService.timeNow().toSecondOfDay();
   }
 }

@@ -1,5 +1,6 @@
 package com.vangogiel.toffee;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,9 +32,29 @@ public class ToffeeContext {
     TimeParser timeParser = new TimeParser();
     TimePeriodAnnotationProcessor timePeriodAnnotationProcessor =
         new TimePeriodAnnotationProcessor();
-    LocalTimeService localTimeService = new LocalTimeService();
+    LocalDateTimeService localDateTimeService = new LocalDateTimeService();
     IntervalScheduledAnnotationProcessor delayCalculator =
-        new IntervalScheduledAnnotationProcessor(timeParser, localTimeService);
+        new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
+    IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
+    intervalScheduledTaskProcessor =
+        new IntervalScheduledTaskProcessor(
+            registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
+    processSources(sources);
+  }
+
+  /**
+   * Create a new ToffeeContext with {@code Clock} as dependency.
+   *
+   * @param clock that will be used to schedule run the context
+   * @param sources as vararg classes containing annotated scheduled methods
+   */
+  public ToffeeContext(Clock clock, Class<?>... sources) {
+    TimeParser timeParser = new TimeParser();
+    TimePeriodAnnotationProcessor timePeriodAnnotationProcessor =
+        new TimePeriodAnnotationProcessor();
+    LocalDateTimeService localDateTimeService = new LocalDateTimeService(clock);
+    IntervalScheduledAnnotationProcessor delayCalculator =
+        new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
     IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
     intervalScheduledTaskProcessor =
         new IntervalScheduledTaskProcessor(
