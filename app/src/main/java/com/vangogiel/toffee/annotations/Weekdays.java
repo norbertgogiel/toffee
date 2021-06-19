@@ -15,10 +15,14 @@ import java.lang.annotation.Target;
  *
  * <ul>
  *   <li>list one day of the week: @Weekdays(days = "Mon")
+ *   <li>list multiple days separated with comma: @Weekdays(days = "Mon,Tue,Thu")
+ *   <li>list continuous days as range: @Weekdays(days = "Mon-Fri")
+ *   <li>list range and additional days: @Weekdays(days = "Mon-Thu,Sat")
  * </ul>
  *
  * @author Norbert Gogiel
  * @since 1.0
+ * @see com.vangogiel.toffee.WeekdayAnnotationProcessor
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
