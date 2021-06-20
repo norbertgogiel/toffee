@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 public class IntervalScheduledTaskProcessor {
 
   private final List<IntervalScheduledTaskAgent> registeredAgents;
-  private final TimePeriodAnnotationProcessor timePeriodAnnotationProcessor;
-  private final IntervalScheduledAnnotationProcessor delayCalculator;
+  private final AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor;
+  private final AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator;
   private final IntervalScheduledTaskAgentProvider agentProvider;
 
   /**
@@ -38,8 +38,8 @@ public class IntervalScheduledTaskProcessor {
    */
   public IntervalScheduledTaskProcessor(
       List<IntervalScheduledTaskAgent> registeredAgents,
-      TimePeriodAnnotationProcessor timePeriodAnnotationProcessor,
-      IntervalScheduledAnnotationProcessor delayCalculator,
+      AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor,
+      AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator,
       IntervalScheduledTaskAgentProvider agentProvider) {
     this.registeredAgents = registeredAgents;
     this.timePeriodAnnotationProcessor = timePeriodAnnotationProcessor;

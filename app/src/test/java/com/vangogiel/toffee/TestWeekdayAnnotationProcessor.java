@@ -13,7 +13,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessMonday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testMonday").getAnnotation(Weekdays.class));
@@ -23,7 +23,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessTuesday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testTuesday").getAnnotation(Weekdays.class));
@@ -33,7 +33,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessWednesday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testWednesday").getAnnotation(Weekdays.class));
@@ -43,7 +43,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessThursday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testThursday").getAnnotation(Weekdays.class));
@@ -53,7 +53,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessFriday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testFriday").getAnnotation(Weekdays.class));
@@ -63,7 +63,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessSaturday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testSaturday").getAnnotation(Weekdays.class));
@@ -73,7 +73,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testProcessSunday() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testSunday").getAnnotation(Weekdays.class));
@@ -83,7 +83,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testMultipleRandomDaysOfTheWeek() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class
@@ -97,7 +97,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testIncorrectMultipleRandomDaysOfTheWeek() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class
@@ -108,7 +108,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testDaysOfTheWeekRange() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class.getMethod("testDaysRange").getAnnotation(Weekdays.class));
@@ -122,7 +122,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testDaysCombination() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class
@@ -139,7 +139,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testIncorrectDays() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class
@@ -151,7 +151,7 @@ public class TestWeekdayAnnotationProcessor {
 
   @Test
   public void testErrorRange() throws NoSuchMethodException {
-    WeekdayAnnotationProcessor subject = new WeekdayAnnotationProcessor();
+    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
     Set<DayOfWeek> result =
         subject.process(
             TestWeekdaysAnnotations.class

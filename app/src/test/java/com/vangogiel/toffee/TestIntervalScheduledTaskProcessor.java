@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 public class TestIntervalScheduledTaskProcessor {
 
   @Mock private TimePeriodAnnotationProcessor mockTimePeriodAnnotationProcessor;
-  @Mock private IntervalScheduledAnnotationProcessor mockDelayCalculator;
+  @Mock private AnnotationProcessor<Method, IntervalScheduledTime> mockDelayCalculator;
   @Mock private IntervalScheduledTaskAgentProvider mockAgentProvider;
   @Mock private IntervalScheduledTaskAgent mockAgent;
   @Mock private List<IntervalScheduledTaskAgent> mockRegisteredAgents;

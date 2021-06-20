@@ -29,7 +29,7 @@ import java.util.Set;
  * @author Norbert Gogiel
  * @since 1.0
  */
-public class WeekdayAnnotationProcessor {
+public class WeekdayAnnotationProcessor implements AnnotationProcessor<Weekdays, Set<DayOfWeek>> {
 
   List<String> daysOfWeek = List.of("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun");
 
