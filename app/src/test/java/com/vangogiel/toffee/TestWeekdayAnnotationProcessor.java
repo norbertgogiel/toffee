@@ -5,158 +5,120 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.vangogiel.toffee.annotations.Weekdays;
 import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.Set;
+import org.junit.Before;
 import org.junit.Test;
 
 /** Test class for {@link com.vangogiel.toffee.WeekdayAnnotationProcessor} */
 public class TestWeekdayAnnotationProcessor {
 
+  private AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject;
+
+  @Before
+  public void setUp() {
+    subject = new WeekdayAnnotationProcessor();
+  }
+
   @Test
   public void testProcessMonday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testMonday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.MONDAY));
+    Set<DayOfWeek> result = getResult("testMonday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.MONDAY);
   }
 
   @Test
   public void testProcessTuesday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testTuesday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.TUESDAY));
+    Set<DayOfWeek> result = getResult("testTuesday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.TUESDAY);
   }
 
   @Test
   public void testProcessWednesday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testWednesday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.WEDNESDAY));
+    Set<DayOfWeek> result = getResult("testWednesday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.WEDNESDAY);
   }
 
   @Test
   public void testProcessThursday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testThursday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.THURSDAY));
+    Set<DayOfWeek> result = getResult("testThursday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.THURSDAY);
   }
 
   @Test
   public void testProcessFriday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testFriday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.FRIDAY));
+    Set<DayOfWeek> result = getResult("testFriday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.FRIDAY);
   }
 
   @Test
   public void testProcessSaturday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testSaturday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.SATURDAY));
+    Set<DayOfWeek> result = getResult("testSaturday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.SATURDAY);
   }
 
   @Test
   public void testProcessSunday() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testSunday").getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.SUNDAY));
+    Set<DayOfWeek> result = getResult("testSunday");
     assertEquals(1, result.size());
+    assertWeekdays(result, DayOfWeek.SUNDAY);
   }
 
   @Test
   public void testMultipleRandomDaysOfTheWeek() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class
-                .getMethod("testMultipleDays")
-                .getAnnotation(Weekdays.class));
-    assertTrue(result.contains(DayOfWeek.MONDAY));
-    assertTrue(result.contains(DayOfWeek.WEDNESDAY));
-    assertTrue(result.contains(DayOfWeek.FRIDAY));
+    Set<DayOfWeek> result = getResult("testMultipleDays");
     assertEquals(3, result.size());
+    assertWeekdays(result, DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY);
   }
 
   @Test
   public void testIncorrectMultipleRandomDaysOfTheWeek() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class
-                .getMethod("testMultipleIncorrectDays")
-                .getAnnotation(Weekdays.class));
+    Set<DayOfWeek> result = getResult("testMultipleIncorrectDays");
     assertEquals(0, result.size());
   }
 
   @Test
   public void testDaysOfTheWeekRange() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class.getMethod("testDaysRange").getAnnotation(Weekdays.class));
+    Set<DayOfWeek> result = getResult("testDaysRange");
     assertEquals(5, result.size());
-    assertTrue(result.contains(DayOfWeek.MONDAY));
-    assertTrue(result.contains(DayOfWeek.TUESDAY));
-    assertTrue(result.contains(DayOfWeek.WEDNESDAY));
-    assertTrue(result.contains(DayOfWeek.THURSDAY));
-    assertTrue(result.contains(DayOfWeek.FRIDAY));
+    assertWeekdays(
+        result,
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY);
   }
 
   @Test
   public void testDaysCombination() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class
-                .getMethod("testDaysCombination")
-                .getAnnotation(Weekdays.class));
+    Set<DayOfWeek> result = getResult("testDaysCombination");
     assertEquals(6, result.size());
-    assertTrue(result.contains(DayOfWeek.MONDAY));
-    assertTrue(result.contains(DayOfWeek.TUESDAY));
-    assertTrue(result.contains(DayOfWeek.WEDNESDAY));
-    assertTrue(result.contains(DayOfWeek.THURSDAY));
-    assertTrue(result.contains(DayOfWeek.FRIDAY));
-    assertTrue(result.contains(DayOfWeek.SUNDAY));
+    assertWeekdays(
+        result,
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY,
+        DayOfWeek.SUNDAY);
   }
 
   @Test
   public void testIncorrectDays() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class
-                .getMethod("testIncorrectDays")
-                .getAnnotation(Weekdays.class));
+    Set<DayOfWeek> result = getResult("testIncorrectDays");
     assertEquals(1, result.size());
     assertTrue(result.contains(DayOfWeek.SUNDAY));
   }
 
   @Test
   public void testErrorRange() throws NoSuchMethodException {
-    AnnotationProcessor<Weekdays, Set<DayOfWeek>> subject = new WeekdayAnnotationProcessor();
-    Set<DayOfWeek> result =
-        subject.process(
-            TestWeekdaysAnnotations.class
-                .getMethod("testErrorRange")
-                .getAnnotation(Weekdays.class));
+    Set<DayOfWeek> result = getResult("testErrorRange");
     assertEquals(1, result.size());
     assertTrue(result.contains(DayOfWeek.SUNDAY));
   }
@@ -201,5 +163,18 @@ public class TestWeekdayAnnotationProcessor {
 
     @Weekdays(days = "Mon-Bar,Sun")
     public void testErrorRange() {}
+  }
+
+  private Set<DayOfWeek> getResult(String methodName) throws NoSuchMethodException {
+    return subject.process(
+        TestWeekdaysAnnotations.class.getMethod(methodName).getAnnotation(Weekdays.class));
+  }
+
+  private void assertWeekdays(Set<DayOfWeek> result, DayOfWeek... days) {
+    Arrays.stream(days)
+        .forEach(
+            day -> {
+              assertTrue(result.contains(day));
+            });
   }
 }
