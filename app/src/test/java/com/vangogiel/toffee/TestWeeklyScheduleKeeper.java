@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.vangogiel.toffee.annotations.Weekdays;
 import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -20,77 +21,43 @@ public class TestWeeklyScheduleKeeper {
   @Mock private Runnable mockRunnable;
   @Mock private IntervalScheduledTime mockTime;
   private final Set<DayOfWeek> setDays = new HashSet<>();
+  private WeeklyScheduleKeeper subject;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    subject = new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
   }
 
   @Test
   public void testPlanInMondayTask() throws NoSuchMethodException {
-    setDays.add(DayOfWeek.MONDAY);
-    IntervalScheduledTask task =
-        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
-    Mockito.when(mockWeekdayAnnotationProcessor.process(Mockito.any())).thenReturn(setDays);
-    Mockito.when(mockTaskProcessor.processRawAndWrap(Mockito.any(), Mockito.any()))
-        .thenReturn(task);
-    WeeklyScheduleKeeper subject =
-        new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
+    prepareAnnotationTaskProcessor(DayOfWeek.MONDAY);
+    prepareTaskProcessor();
     subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testMonday"));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.MONDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.TUESDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.WEDNESDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.THURSDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.FRIDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.SATURDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.SUNDAY));
+    assertWeeklyEntries(1, 0, 0, 0, 0, 0, 0);
   }
 
   @Test
   public void testPlanInMixedDays() throws NoSuchMethodException {
-    setDays.add(DayOfWeek.MONDAY);
-    setDays.add(DayOfWeek.SATURDAY);
-    IntervalScheduledTask task =
-        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
-    Mockito.when(mockWeekdayAnnotationProcessor.process(Mockito.any())).thenReturn(setDays);
-    Mockito.when(mockTaskProcessor.processRawAndWrap(Mockito.any(), Mockito.any()))
-        .thenReturn(task);
-    WeeklyScheduleKeeper subject =
-        new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
+    prepareAnnotationTaskProcessor(DayOfWeek.MONDAY, DayOfWeek.SATURDAY);
+    prepareTaskProcessor();
     subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testMixedDays"));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.MONDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.TUESDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.WEDNESDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.THURSDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.FRIDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.SATURDAY));
-    assertEquals(0, subject.getNumberOfTasksScheduled(DayOfWeek.SUNDAY));
+    assertWeeklyEntries(1, 0, 0, 0, 0, 1, 0);
   }
 
   @Test
   public void testAllDaysOfWeek() throws NoSuchMethodException {
-    setDays.add(DayOfWeek.MONDAY);
-    setDays.add(DayOfWeek.TUESDAY);
-    setDays.add(DayOfWeek.WEDNESDAY);
-    setDays.add(DayOfWeek.THURSDAY);
-    setDays.add(DayOfWeek.FRIDAY);
-    setDays.add(DayOfWeek.SATURDAY);
-    setDays.add(DayOfWeek.SUNDAY);
-    IntervalScheduledTask task =
-        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
-    Mockito.when(mockWeekdayAnnotationProcessor.process(Mockito.any())).thenReturn(setDays);
-    Mockito.when(mockTaskProcessor.processRawAndWrap(Mockito.any(), Mockito.any()))
-        .thenReturn(task);
-    WeeklyScheduleKeeper subject =
-        new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
+    prepareAnnotationTaskProcessor(
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY,
+        DayOfWeek.SATURDAY,
+        DayOfWeek.SUNDAY);
+    prepareTaskProcessor();
     subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testAllDaysOfWeek"));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.MONDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.TUESDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.WEDNESDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.THURSDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.FRIDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.SATURDAY));
-    assertEquals(1, subject.getNumberOfTasksScheduled(DayOfWeek.SUNDAY));
+    assertWeeklyEntries(1, 1, 1, 1, 1, 1, 1);
   }
 
   static class WeeklySchedules {
@@ -102,5 +69,34 @@ public class TestWeeklyScheduleKeeper {
     public void testMixedDays() {}
 
     public void testAllDaysOfWeek() {}
+  }
+
+  private void prepareAnnotationTaskProcessor(DayOfWeek... dayOfWeeks) {
+    setDays.addAll(Arrays.asList(dayOfWeeks));
+    Mockito.when(mockWeekdayAnnotationProcessor.process(Mockito.any())).thenReturn(setDays);
+  }
+
+  private void prepareTaskProcessor() {
+    IntervalScheduledTask task =
+        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
+    Mockito.when(mockTaskProcessor.processRawAndWrap(Mockito.any(), Mockito.any()))
+        .thenReturn(task);
+  }
+
+  private void assertWeeklyEntries(
+      int monCount,
+      int tueCount,
+      int wedCount,
+      int thuCount,
+      int friCount,
+      int satCount,
+      int sunCount) {
+    assertEquals(monCount, subject.getNumberOfTasksScheduled(DayOfWeek.MONDAY));
+    assertEquals(tueCount, subject.getNumberOfTasksScheduled(DayOfWeek.TUESDAY));
+    assertEquals(wedCount, subject.getNumberOfTasksScheduled(DayOfWeek.WEDNESDAY));
+    assertEquals(thuCount, subject.getNumberOfTasksScheduled(DayOfWeek.THURSDAY));
+    assertEquals(friCount, subject.getNumberOfTasksScheduled(DayOfWeek.FRIDAY));
+    assertEquals(satCount, subject.getNumberOfTasksScheduled(DayOfWeek.SATURDAY));
+    assertEquals(sunCount, subject.getNumberOfTasksScheduled(DayOfWeek.SUNDAY));
   }
 }
