@@ -9,6 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Keeper is responsible for holding a schedule for the week and registering all tasks for days in
+ * the week.
+ *
+ * <p>The schedule is a {@code Map<>} of {@code DayOfWeek} with a {@code List<>} of tasks for each
+ * day.
+ *
+ * <p>Tasks are planned as an entry in a {@code List<>} that is assigned to that day of the week.
+ *
+ * @author Norbert Gogiel
+ * @since 1.0
+ */
 public class WeeklyScheduleKeeper {
 
   private final Map<DayOfWeek, List<IntervalScheduledTask>> schedule =
@@ -28,6 +40,12 @@ public class WeeklyScheduleKeeper {
   private final WeekdayAnnotationProcessor weekdayAnnotationProcessor;
   private final IntervalScheduledTaskProcessor taskProcessor;
 
+  /**
+   * Create a new WeeklyScheduleKeeper.
+   *
+   * @param weekdayAnnotationProcessor to convert raw annotation to meaningful object
+   * @param taskProcessor to schedule tasks
+   */
   public WeeklyScheduleKeeper(
       WeekdayAnnotationProcessor weekdayAnnotationProcessor,
       IntervalScheduledTaskProcessor taskProcessor) {
@@ -35,6 +53,17 @@ public class WeeklyScheduleKeeper {
     this.taskProcessor = taskProcessor;
   }
 
+  /**
+   * Allows to create a wrapped task and schedule it appropriately.
+   *
+   * <p>The scheduling depends on the annotation provided.
+   *
+   * <p>If annotation is provided the task is scheduled as prescribed by the annotation. If the
+   * annotation isn't provided them the tasks is scheduled for all the days in the week.
+   *
+   * @param source class to be able to create a task
+   * @param method that is to be run from the class
+   */
   public void planIn(Class<?> source, Method method) {
     IntervalScheduledTask task = taskProcessor.processRawAndWrap(source, method);
     if (method.isAnnotationPresent(Weekdays.class)) {
@@ -46,6 +75,12 @@ public class WeeklyScheduleKeeper {
     }
   }
 
+  /**
+   * Retrieve number of tasks scheduled for the day of the week.
+   *
+   * @param dayOfWeek for which the number of tasks is required
+   * @return number of days as {@code int}
+   */
   public int getNumberOfTasksScheduled(DayOfWeek dayOfWeek) {
     return schedule.get(dayOfWeek).size();
   }

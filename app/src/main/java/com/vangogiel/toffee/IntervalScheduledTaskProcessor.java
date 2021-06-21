@@ -88,7 +88,7 @@ public class IntervalScheduledTaskProcessor {
    * @throws NullPointerException if the command in the task or unit is null
    * @throws IllegalArgumentException if scheduled period is less than or equal to zero
    */
-  private void schedule(IntervalScheduledTask task) {
+  public void schedule(IntervalScheduledTask task) {
     IntervalScheduledTaskAgent agent = agentProvider.get();
     registeredAgents.add(agent);
     agent.submit(task);
