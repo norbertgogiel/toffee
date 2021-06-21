@@ -73,7 +73,7 @@ public class IntervalScheduledTaskProcessor {
    * @throws IllegalFormatPrecisionException if the time in the annotation is of incorrect format
    * @throws java.time.DateTimeException if the time is out of its relative time bounds
    */
-  private IntervalScheduledTask processRawAndWrap(Class<?> source, Method method) {
+  public IntervalScheduledTask processRawAndWrap(Class<?> source, Method method) {
     long period = timePeriodAnnotationProcessor.process(method);
     IntervalScheduledTime delay = delayCalculator.process(method);
     Runnable runnable = new ScheduledTaskRunnable(source, method);
