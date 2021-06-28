@@ -1,15 +1,21 @@
 package com.vangogiel.toffee;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class responsible for scheduling tasks for the day.
  *
- * <p>The main overridden task checks the day of the week for the day it is running on. Then, it
- * retrieves the tasks from the map provided.
+ * <p>The start method invokes two threads. One is to schedule the task now and the second one to
+ * schedule the task at midnight.
+ *
+ * <p>The task checks the day of the week for the day it is running on. Then, it retrieves the list
+ * of tasks from the map provided.
  *
  * <p>All the tasks for the day are scheduled using {@link
  * com.vangogiel.toffee.IntervalScheduledTaskProcessor}.
@@ -18,14 +24,15 @@ import java.util.Map;
  * @since 1.0
  * @see com.vangogiel.toffee.IntervalScheduledTaskProcessor
  */
-public class WeeklyScheduleDailyWorker implements Runnable {
+public class WeeklyScheduleDailyWorker {
 
   private final Map<DayOfWeek, List<IntervalScheduledTask>> schedule;
   private final LocalDateTimeService localDateTimeService;
   private final IntervalScheduledTaskProcessor taskProcessor;
+  private final ScheduledThreadPoolExecutor task;
 
   /**
-   * Create new DailyScheduleWorker.
+   * Create new WeeklyScheduleDailyWorker.
    *
    * @param schedule of all the tasks for for the week
    * @param localDateTimeService wrapping up {@code LocalDateTime}
@@ -38,13 +45,45 @@ public class WeeklyScheduleDailyWorker implements Runnable {
     this.schedule = schedule;
     this.localDateTimeService = localDateTimeService;
     this.taskProcessor = taskProcessor;
+    this.task = new ScheduledThreadPoolExecutor(1);
   }
 
-  @Override
-  public void run() {
-    DayOfWeek dayOfWeekNow = localDateTimeService.dateNow().getDayOfWeek();
-    List<IntervalScheduledTask> listOfTasks =
-        schedule.getOrDefault(dayOfWeekNow, new ArrayList<>());
-    listOfTasks.forEach(taskProcessor::schedule);
+  /**
+   * Starts scheduling all the tasks that can be run now and schedules revisits at midnight for each
+   * day.
+   *
+   * <p>Tasks are started daily at midnight of the time the application is running in.
+   */
+  public void start() {
+    task.schedule(getTask(), 0, TimeUnit.SECONDS);
+    task.scheduleAtFixedRate(
+        getTask(), getNanoTimeToMidnight(), TimeUnit.DAYS.toNanos(1L), TimeUnit.NANOSECONDS);
+  }
+
+  /**
+   * The daily scheduling task.
+   *
+   * <p>It checks the day of the way of the day the task is executed on. It then retrieves tasks for
+   * that day and delegates scheduling to {@link
+   * com.vangogiel.toffee.IntervalScheduledTaskProcessor}.
+   *
+   * @return the runnable task
+   */
+  private Runnable getTask() {
+    return () -> {
+      DayOfWeek dayOfWeekNow = localDateTimeService.dateNow().getDayOfWeek();
+      List<IntervalScheduledTask> listOfTasks =
+          schedule.getOrDefault(dayOfWeekNow, new ArrayList<>());
+      listOfTasks.forEach(taskProcessor::schedule);
+    };
+  }
+
+  /**
+   * Provide time left from now till midnight in nanoseconds.
+   *
+   * @return time in nanoseconds
+   */
+  private long getNanoTimeToMidnight() {
+    return LocalTime.MAX.toNanoOfDay() - localDateTimeService.timeNow().toNanoOfDay();
   }
 }

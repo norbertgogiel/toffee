@@ -2,6 +2,7 @@ package com.vangogiel.toffee;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,39 +20,63 @@ public class TestWeeklyScheduleDailyWorker {
   @Mock private IntervalScheduledTaskProcessor taskProcessor;
   @Mock private IntervalScheduledTask mockTask1;
   @Mock private IntervalScheduledTask mockTask2;
-  private Map<DayOfWeek, List<IntervalScheduledTask>> schedule;
+  private final Map<DayOfWeek, List<IntervalScheduledTask>> schedule = new HashMap<>();
+  private final List<IntervalScheduledTask> tasksForTheDay = new ArrayList<>();
   private WeeklyScheduleDailyWorker subject;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    schedule = new HashMap<>();
+    schedule.clear();
+    tasksForTheDay.clear();
     subject = new WeeklyScheduleDailyWorker(schedule, localDateTimeService, taskProcessor);
+    prepareTodayIsMonday();
   }
 
   @Test
-  public void testScheduleTasksForToday() {
-    Mockito.when(localDateTimeService.dateNow()).thenReturn(LocalDate.of(2021, 6, 14));
-    List<IntervalScheduledTask> tasksForTheDay = new ArrayList<>();
+  public void testScheduleTasksForToday() throws InterruptedException {
+    prepareTime(0, 0, 1);
     tasksForTheDay.add(mockTask1);
     tasksForTheDay.add(mockTask2);
     schedule.put(DayOfWeek.MONDAY, tasksForTheDay);
 
-    subject.run();
+    subject.start();
 
-    Mockito.verify(taskProcessor).schedule(mockTask1);
-    Mockito.verify(taskProcessor).schedule(mockTask2);
+    Thread.sleep(1500);
+
+    Mockito.verify(taskProcessor, Mockito.times(1)).schedule(mockTask1);
+    Mockito.verify(taskProcessor, Mockito.times(1)).schedule(mockTask2);
   }
 
   @Test
   public void testVerifyNoTasksForToday() {
-    Mockito.when(localDateTimeService.dateNow()).thenReturn(LocalDate.of(2021, 6, 14));
-    List<IntervalScheduledTask> tasksForTheDay = new ArrayList<>();
+    prepareTime(0, 0, 1);
     tasksForTheDay.add(mockTask1);
     schedule.put(DayOfWeek.TUESDAY, tasksForTheDay);
 
-    subject.run();
+    subject.start();
 
     Mockito.verifyZeroInteractions(taskProcessor);
+  }
+
+  @Test
+  public void testVerifyInvokedBeforeMidnightAndAfter() throws InterruptedException {
+    prepareTime(23, 59, 59);
+    tasksForTheDay.add(mockTask1);
+    schedule.put(DayOfWeek.MONDAY, tasksForTheDay);
+
+    subject.start();
+
+    Thread.sleep(1500);
+
+    Mockito.verify(taskProcessor, Mockito.times(2)).schedule(mockTask1);
+  }
+
+  private void prepareTime(int hour, int minute, int second) {
+    Mockito.when(localDateTimeService.timeNow()).thenReturn(LocalTime.of(hour, minute, second));
+  }
+
+  private void prepareTodayIsMonday() {
+    Mockito.when(localDateTimeService.dateNow()).thenReturn(LocalDate.of(2021, 6, 14));
   }
 }
