@@ -1,6 +1,5 @@
 package com.vangogiel.toffee;
 
-import java.lang.reflect.Method;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +21,8 @@ import java.util.List;
 public class ToffeeContext {
 
   private final List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-  private final WeeklyScheduleKeeper weeklyScheduleKeeper;
+  private WeeklyScheduleKeeper weeklyScheduleKeeper;
+  private WeeklyScheduleDailyWorker weeklyScheduleDailyWorker;
 
   /**
    * Create a new ToffeeContext.
@@ -30,22 +30,7 @@ public class ToffeeContext {
    * @param sources as vararg classes containing annotated scheduled methods
    */
   public ToffeeContext(Class<?>... sources) {
-    TimeParser timeParser = new TimeParser();
-    AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor =
-        new TimePeriodAnnotationProcessor();
-    LocalDateTimeService localDateTimeService = new LocalDateTimeService();
-    AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator =
-        new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
-    IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
-    IntervalScheduledTaskProcessor intervalScheduledTaskProcessor =
-        new IntervalScheduledTaskProcessor(
-            registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
-    WeekdayAnnotationProcessor weekdayAnnotationProcessor = new WeekdayAnnotationProcessor();
-    weeklyScheduleKeeper =
-        new WeeklyScheduleKeeper(weekdayAnnotationProcessor, intervalScheduledTaskProcessor);
-    WeeklyScheduleDailyWorker weeklyScheduleDailyWorker =
-        new WeeklyScheduleDailyWorker(
-            weeklyScheduleKeeper, localDateTimeService, intervalScheduledTaskProcessor);
+    instantiateContext();
     processSources(sources);
     weeklyScheduleDailyWorker.run();
   }
@@ -57,22 +42,7 @@ public class ToffeeContext {
    * @param sources as vararg classes containing annotated scheduled methods
    */
   public ToffeeContext(Clock clock, Class<?>... sources) {
-    TimeParser timeParser = new TimeParser();
-    AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor =
-        new TimePeriodAnnotationProcessor();
-    LocalDateTimeService localDateTimeService = new LocalDateTimeService(clock);
-    AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator =
-        new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
-    IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
-    IntervalScheduledTaskProcessor intervalScheduledTaskProcessor =
-        new IntervalScheduledTaskProcessor(
-            registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
-    WeekdayAnnotationProcessor weekdayAnnotationProcessor = new WeekdayAnnotationProcessor();
-    weeklyScheduleKeeper =
-        new WeeklyScheduleKeeper(weekdayAnnotationProcessor, intervalScheduledTaskProcessor);
-    WeeklyScheduleDailyWorker weeklyScheduleDailyWorker =
-        new WeeklyScheduleDailyWorker(
-            weeklyScheduleKeeper, localDateTimeService, intervalScheduledTaskProcessor);
+    instantiateContext(clock);
     processSources(sources);
     weeklyScheduleDailyWorker.run();
   }
@@ -148,5 +118,49 @@ public class ToffeeContext {
    */
   private static void assertNotNull(Object object) {
     if (object == null) throw new IllegalArgumentException("Object must not be null");
+  }
+
+  /** Create Toffee Context. */
+  private void instantiateContext() {
+    instantiateCoreContext(new LocalDateTimeService());
+  }
+
+  /**
+   * Create Toffee Context with custom {@code Clock}.
+   *
+   * @param clock to be used for the context
+   */
+  private void instantiateContext(Clock clock) {
+    instantiateCoreContext(new LocalDateTimeService(clock));
+  }
+
+  /**
+   * Instantiate core Toffee Context.
+   *
+   * @param localDateTimeService to be used for the context
+   */
+  private void instantiateCoreContext(LocalDateTimeService localDateTimeService) {
+    IntervalScheduledTaskProcessor intervalScheduledTaskProcessor =
+        createTaskProcessor(localDateTimeService);
+    weeklyScheduleKeeper =
+        new WeeklyScheduleKeeper(new WeekdayAnnotationProcessor(), intervalScheduledTaskProcessor);
+    weeklyScheduleDailyWorker =
+        new WeeklyScheduleDailyWorker(
+            weeklyScheduleKeeper, localDateTimeService, intervalScheduledTaskProcessor);
+  }
+
+  /**
+   * Create an instance of {@code IntervalScheduledTaskProcessor}.
+   *
+   * @param localDateTimeService to be used for task processor
+   * @return instance of {@code IntervalScheduledTaskProcessor}.
+   */
+  private IntervalScheduledTaskProcessor createTaskProcessor(
+      LocalDateTimeService localDateTimeService) {
+    return new IntervalScheduledTaskProcessor(
+        registeredAgents,
+        new TimePeriodAnnotationProcessor(),
+        new IntervalScheduledAnnotationProcessor(new TimeParser(), localDateTimeService),
+        new IntervalScheduledTaskAgentProvider());
   }
 }
