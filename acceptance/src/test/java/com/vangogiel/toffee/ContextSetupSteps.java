@@ -1,5 +1,6 @@
 package com.vangogiel.toffee;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 
 import java.time.Clock;
@@ -15,6 +16,11 @@ public class ContextSetupSteps {
     public static AtomicInteger atomicInteger = new AtomicInteger();
     public static ToffeeContext toffeeContext;
     private Clock clock;
+
+    @After
+    public void afterEach() {
+        toffeeContext.shutDownAllTasksNow();
+    }
 
     @Given("a task set to run non-stop with every second custom annotation")
     public void basicContextWithContinuousTask() {

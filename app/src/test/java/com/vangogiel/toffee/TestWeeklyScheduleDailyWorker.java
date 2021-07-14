@@ -18,6 +18,7 @@ public class TestWeeklyScheduleDailyWorker {
 
   @Mock private LocalDateTimeService localDateTimeService;
   @Mock private IntervalScheduledTaskProcessor taskProcessor;
+  @Mock private WeeklyScheduleKeeper mockWeeklyScheduleKeeper;
   @Mock private IntervalScheduledTask mockTask1;
   @Mock private IntervalScheduledTask mockTask2;
   private final Map<DayOfWeek, List<IntervalScheduledTask>> schedule = new HashMap<>();
@@ -29,7 +30,9 @@ public class TestWeeklyScheduleDailyWorker {
     MockitoAnnotations.initMocks(this);
     schedule.clear();
     tasksForTheDay.clear();
-    subject = new WeeklyScheduleDailyWorker(schedule, localDateTimeService, taskProcessor);
+    subject =
+        new WeeklyScheduleDailyWorker(
+            mockWeeklyScheduleKeeper, localDateTimeService, taskProcessor);
     prepareTodayIsMonday();
   }
 
@@ -38,9 +41,10 @@ public class TestWeeklyScheduleDailyWorker {
     prepareTime(0, 0, 1);
     tasksForTheDay.add(mockTask1);
     tasksForTheDay.add(mockTask2);
-    schedule.put(DayOfWeek.MONDAY, tasksForTheDay);
+    Mockito.when(mockWeeklyScheduleKeeper.getTaskScheduled(DayOfWeek.MONDAY))
+        .thenReturn(tasksForTheDay);
 
-    subject.start();
+    subject.run();
 
     Thread.sleep(1500);
 
@@ -52,9 +56,10 @@ public class TestWeeklyScheduleDailyWorker {
   public void testVerifyNoTasksForToday() {
     prepareTime(0, 0, 1);
     tasksForTheDay.add(mockTask1);
-    schedule.put(DayOfWeek.TUESDAY, tasksForTheDay);
+    Mockito.when(mockWeeklyScheduleKeeper.getTaskScheduled(DayOfWeek.TUESDAY))
+        .thenReturn(tasksForTheDay);
 
-    subject.start();
+    subject.run();
 
     Mockito.verifyZeroInteractions(taskProcessor);
   }
@@ -63,9 +68,10 @@ public class TestWeeklyScheduleDailyWorker {
   public void testVerifyInvokedBeforeMidnightAndAfter() throws InterruptedException {
     prepareTime(23, 59, 59);
     tasksForTheDay.add(mockTask1);
-    schedule.put(DayOfWeek.MONDAY, tasksForTheDay);
+    Mockito.when(mockWeeklyScheduleKeeper.getTaskScheduled(DayOfWeek.MONDAY))
+        .thenReturn(tasksForTheDay);
 
-    subject.start();
+    subject.run();
 
     Thread.sleep(1500);
 

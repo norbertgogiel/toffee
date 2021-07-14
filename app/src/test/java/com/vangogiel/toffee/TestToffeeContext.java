@@ -61,8 +61,9 @@ public class TestToffeeContext {
   }
 
   @Test
-  public void testShutDownAllTasksNow() {
+  public void testShutDownAllTasksNow() throws InterruptedException {
     ToffeeContext subject = new ToffeeContext(IntervalScheduledTestClass.class);
+    Thread.sleep(2000);
     assertEquals(1, subject.getTotalCorePoolSize());
     subject.shutDownAllTasksNow();
     assertEquals(0, subject.getTotalCorePoolSize());

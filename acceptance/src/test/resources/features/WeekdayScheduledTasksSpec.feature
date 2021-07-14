@@ -7,4 +7,3 @@ Feature: Weekday Scheduled Tasks
     Then I wait 3 seconds
     And I shutdown all tasks now
     And I verify the tasks have run 0 times in total
-    

@@ -36,7 +36,6 @@ public class WeeklyScheduleKeeper {
         }
       };
 
-  private final List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
   private final WeekdayAnnotationProcessor weekdayAnnotationProcessor;
   private final IntervalScheduledTaskProcessor taskProcessor;
 
@@ -62,16 +61,16 @@ public class WeeklyScheduleKeeper {
    * annotation isn't provided them the tasks is scheduled for all the days in the week.
    *
    * @param source class to be able to create a task
-   * @param method that is to be run from the class
+   * @param method that is to be runs from the class
    */
   public void planIn(Class<?> source, Method method) {
-    IntervalScheduledTask task = taskProcessor.processRawAndWrap(source, method);
-    if (method.isAnnotationPresent(Weekdays.class)) {
-      Weekdays weekdays = method.getAnnotation(Weekdays.class);
-      Set<DayOfWeek> scheduledDays = weekdayAnnotationProcessor.process(weekdays);
-      scheduledDays.forEach(day -> schedule.get(day).add(task));
-    } else {
-      schedule.forEach((day, tasks) -> tasks.add(task));
+    if (taskProcessor.isMethodAValidSchedule(method)) {
+      IntervalScheduledTask task = taskProcessor.processRawAndWrap(source, method);
+      if (method.isAnnotationPresent(Weekdays.class)) {
+        scheduleForTheDay(method, task);
+      } else {
+        schedule.forEach((day, tasks) -> tasks.add(task));
+      }
     }
   }
 
@@ -83,5 +82,28 @@ public class WeeklyScheduleKeeper {
    */
   public int getNumberOfTasksScheduled(DayOfWeek dayOfWeek) {
     return schedule.get(dayOfWeek).size();
+  }
+
+  /**
+   * Retrieve tasks scheduled for the day.
+   *
+   * @param dayOfWeek for which scheduled tasks are to be retrieved
+   * @return the list of tasks for the day requested
+   */
+  public List<IntervalScheduledTask> getTaskScheduled(DayOfWeek dayOfWeek) {
+    return schedule.getOrDefault(dayOfWeek, new ArrayList<>());
+  }
+
+  /**
+   * This method schedules a task for the day the method is scheduled with by {@link
+   * com.vangogiel.toffee.annotations.Weekdays}.
+   *
+   * @param method annotated with {@code Weekdays}
+   * @param task to be scheduled
+   */
+  private void scheduleForTheDay(Method method, IntervalScheduledTask task) {
+    Weekdays weekdays = method.getAnnotation(Weekdays.class);
+    Set<DayOfWeek> scheduledDays = weekdayAnnotationProcessor.process(weekdays);
+    scheduledDays.forEach(day -> schedule.get(day).add(task));
   }
 }

@@ -27,6 +27,7 @@ public class TestWeeklyScheduleKeeper {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     subject = new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
+    Mockito.when(mockTaskProcessor.isMethodAValidSchedule(Mockito.any())).thenReturn(true);
   }
 
   @Test

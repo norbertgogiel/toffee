@@ -1,14 +1,17 @@
 package com.vangogiel.toffee;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,87 +26,62 @@ public class TestIntervalScheduledTaskProcessor {
   @Mock private IntervalScheduledTaskAgentProvider mockAgentProvider;
   @Mock private IntervalScheduledTaskAgent mockAgent;
   @Mock private List<IntervalScheduledTaskAgent> mockRegisteredAgents;
+  @Mock private IntervalScheduledTask mockTask;
+  private IntervalScheduledTaskProcessor subject;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(mockTimePeriodAnnotationProcessor.process(Mockito.any())).thenReturn(1L);
-  }
-
-  @Test
-  public void testScheduled() {
-    when(mockDelayCalculator.process(Mockito.any()))
-        .thenReturn(new IntervalScheduledTime(10000, 10000));
-    when(mockAgentProvider.get()).thenReturn(mockAgent);
-    IntervalScheduledTaskProcessor subject =
+    subject =
         new IntervalScheduledTaskProcessor(
             mockRegisteredAgents,
             mockTimePeriodAnnotationProcessor,
             mockDelayCalculator,
             mockAgentProvider);
+  }
 
-    assertDoesNotThrow(
-        () ->
-            subject.tryScheduleTask(
-                ScheduledMethodWithAnnotatedFullTime.class,
-                ScheduledMethodWithAnnotatedFullTime.class.getMethod("testRunnable")));
+  @Test
+  public void testProcessRawAndWrap() throws NoSuchMethodException {
+    when(mockTimePeriodAnnotationProcessor.process(Mockito.any())).thenReturn(1L);
+    when(mockDelayCalculator.process(Mockito.any()))
+        .thenReturn(new IntervalScheduledTime(10000, 10000));
+
+    IntervalScheduledTask result =
+        subject.processRawAndWrap(
+            ScheduledMethodWithAnnotatedFullTime.class,
+            ScheduledMethodWithAnnotatedFullTime.class.getMethod("testRunnable"));
 
     verify(mockTimePeriodAnnotationProcessor).process(Mockito.any());
     verify(mockDelayCalculator).process(Mockito.any());
+    assertEquals(10000, result.getDelayToStart());
+    assertEquals(10000, result.getDelayToShutdown());
+    assertEquals(1L, result.getPeriod());
+    assertNotNull(result.getRunnable());
+    assertEquals(TimeUnit.SECONDS, result.getTimeUnit());
+  }
+
+  @Test
+  public void testSchedule() {
+    when(mockAgentProvider.get()).thenReturn(mockAgent);
+
+    subject.schedule(mockTask);
+
     verify(mockAgentProvider).get();
-    verify(mockAgent).submit(Mockito.any());
-    verify(mockRegisteredAgents).add(Mockito.any());
+    verify(mockAgent).submit(mockTask);
   }
 
   @Test
-  public void testAnnotatedCorrectly() {
-    when(mockAgentProvider.get()).thenReturn(mockAgent);
-    IntervalScheduledTaskProcessor subject =
-        new IntervalScheduledTaskProcessor(
-            mockRegisteredAgents,
-            mockTimePeriodAnnotationProcessor,
-            mockDelayCalculator,
-            mockAgentProvider);
-    assertDoesNotThrow(
-        () ->
-            subject.tryScheduleTask(
-                TestAnnotatedCorrectly.class,
-                TestAnnotatedCorrectly.class.getMethod("testRunnable")));
-    verify(mockAgentProvider).get();
+  public void testIsMethodAValidScheduleAndSuccess() throws NoSuchMethodException {
+    assertTrue(
+        subject.isMethodAValidSchedule(
+            ScheduledMethodWithAnnotatedFullTime.class.getMethod("testRunnable")));
   }
 
   @Test
-  public void testAnnotatedWithScheduledFrom() {
-    when(mockAgentProvider.get()).thenReturn(mockAgent);
-    IntervalScheduledTaskProcessor subject =
-        new IntervalScheduledTaskProcessor(
-            mockRegisteredAgents,
-            mockTimePeriodAnnotationProcessor,
-            mockDelayCalculator,
-            mockAgentProvider);
-    assertDoesNotThrow(
-        () ->
-            subject.tryScheduleTask(
-                TestAnnotatedWithScheduledFrom.class,
-                TestAnnotatedWithScheduledFrom.class.getMethod("testRunnable")));
-    verifyZeroInteractions(mockAgentProvider);
-  }
-
-  @Test
-  public void testAnnotatedWithScheduledUntil() {
-    when(mockAgentProvider.get()).thenReturn(mockAgent);
-    IntervalScheduledTaskProcessor subject =
-        new IntervalScheduledTaskProcessor(
-            mockRegisteredAgents,
-            mockTimePeriodAnnotationProcessor,
-            mockDelayCalculator,
-            mockAgentProvider);
-    assertDoesNotThrow(
-        () ->
-            subject.tryScheduleTask(
-                TestAnnotatedWithScheduledUntil.class,
-                TestAnnotatedWithScheduledUntil.class.getMethod("testRunnable")));
-    verifyZeroInteractions(mockAgentProvider);
+  public void testIsMethodAValidScheduleAndFailure() throws NoSuchMethodException {
+    assertFalse(
+        subject.isMethodAValidSchedule(
+            TestAnnotatedWithScheduledFrom.class.getMethod("testRunnable")));
   }
 
   static class ScheduledMethodWithAnnotatedFullTime {
@@ -115,44 +93,11 @@ public class TestIntervalScheduledTaskProcessor {
     }
   }
 
-  static class ScheduledMethodThrowsException {
-
-    @ScheduledFrom(time = "00:00:00")
-    @ScheduledUntil(time = "23:59:59")
-    public void testRunnable() throws Exception {
-      throw new Exception("Evil");
-    }
-  }
-
-  static class TestAnnotatedCorrectly {
-
-    @ScheduledFrom(time = "00:00:00")
-    @ScheduledUntil(time = "01:01:01:")
-    public Runnable testRunnable() {
-      return () -> System.out.println("evil");
-    }
-  }
-
   static class TestAnnotatedWithScheduledFrom {
 
     @ScheduledFrom(time = "00:00:00")
     public Runnable testRunnable() {
       return () -> System.out.println("evil");
     }
-  }
-
-  static class TestAnnotatedWithScheduledUntil {
-
-    @ScheduledUntil(time = "01:01:01:")
-    public Runnable testRunnable() {
-      return () -> System.out.println("evil");
-    }
-  }
-
-  static class TestAnnotatedAnnotatedCorrectlyNotRunnable {
-
-    @ScheduledFrom(time = "00:00:00")
-    @ScheduledUntil(time = "01:01:01:")
-    public void testRunnable() {}
   }
 }

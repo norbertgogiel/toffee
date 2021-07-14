@@ -22,7 +22,7 @@ import java.util.List;
 public class ToffeeContext {
 
   private final List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-  private final IntervalScheduledTaskProcessor intervalScheduledTaskProcessor;
+  private final WeeklyScheduleKeeper weeklyScheduleKeeper;
 
   /**
    * Create a new ToffeeContext.
@@ -37,10 +37,17 @@ public class ToffeeContext {
     AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator =
         new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
     IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
-    intervalScheduledTaskProcessor =
+    IntervalScheduledTaskProcessor intervalScheduledTaskProcessor =
         new IntervalScheduledTaskProcessor(
             registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
+    WeekdayAnnotationProcessor weekdayAnnotationProcessor = new WeekdayAnnotationProcessor();
+    weeklyScheduleKeeper =
+        new WeeklyScheduleKeeper(weekdayAnnotationProcessor, intervalScheduledTaskProcessor);
+    WeeklyScheduleDailyWorker weeklyScheduleDailyWorker =
+        new WeeklyScheduleDailyWorker(
+            weeklyScheduleKeeper, localDateTimeService, intervalScheduledTaskProcessor);
     processSources(sources);
+    weeklyScheduleDailyWorker.run();
   }
 
   /**
@@ -57,10 +64,17 @@ public class ToffeeContext {
     AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator =
         new IntervalScheduledAnnotationProcessor(timeParser, localDateTimeService);
     IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
-    intervalScheduledTaskProcessor =
+    IntervalScheduledTaskProcessor intervalScheduledTaskProcessor =
         new IntervalScheduledTaskProcessor(
             registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
+    WeekdayAnnotationProcessor weekdayAnnotationProcessor = new WeekdayAnnotationProcessor();
+    weeklyScheduleKeeper =
+        new WeeklyScheduleKeeper(weekdayAnnotationProcessor, intervalScheduledTaskProcessor);
+    WeeklyScheduleDailyWorker weeklyScheduleDailyWorker =
+        new WeeklyScheduleDailyWorker(
+            weeklyScheduleKeeper, localDateTimeService, intervalScheduledTaskProcessor);
     processSources(sources);
+    weeklyScheduleDailyWorker.run();
   }
 
   /**
@@ -69,7 +83,8 @@ public class ToffeeContext {
    * @return value as {@code int}
    */
   public int getTotalCorePoolSize() {
-    return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum();
+    List<IntervalScheduledTaskAgent> cTasks = new ArrayList<>(registeredAgents);
+    return cTasks.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum();
   }
 
   /**
@@ -78,7 +93,8 @@ public class ToffeeContext {
    * @return value as {@code int}
    */
   public int getTotalCurrentPoolSize() {
-    return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
+    List<IntervalScheduledTaskAgent> cTasks = new ArrayList<>(registeredAgents);
+    return cTasks.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
   }
 
   /**
@@ -107,7 +123,7 @@ public class ToffeeContext {
 
   /**
    * Processes each class by delegating the task of scheduling to {@link
-   * IntervalScheduledTaskProcessor}.
+   * com.vangogiel.toffee.WeeklyScheduleKeeper}.
    *
    * <p>It asserts whether the class is a null or not before processing. It then streams through all
    * the methods in the class and submits each one of them to schedule without assessing its
@@ -119,7 +135,7 @@ public class ToffeeContext {
   private void processSource(Class<?> source) {
     assertNotNull(source);
     Arrays.stream(source.getMethods())
-        .forEach(method -> intervalScheduledTaskProcessor.tryScheduleTask(source, method));
+        .forEach(method -> weeklyScheduleKeeper.planIn(source, method));
   }
 
   /**

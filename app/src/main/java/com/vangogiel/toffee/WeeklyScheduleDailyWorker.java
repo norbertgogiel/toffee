@@ -2,9 +2,7 @@ package com.vangogiel.toffee;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class WeeklyScheduleDailyWorker {
 
-  private final Map<DayOfWeek, List<IntervalScheduledTask>> schedule;
+  private final WeeklyScheduleKeeper weeklyScheduleKeeper;
   private final LocalDateTimeService localDateTimeService;
   private final IntervalScheduledTaskProcessor taskProcessor;
   private final ScheduledThreadPoolExecutor task;
@@ -34,15 +32,15 @@ public class WeeklyScheduleDailyWorker {
   /**
    * Create new WeeklyScheduleDailyWorker.
    *
-   * @param schedule of all the tasks for for the week
+   * @param weeklyScheduleKeeper of all the tasks for for the week
    * @param localDateTimeService wrapping up {@code LocalDateTime}
    * @param taskProcessor allowing to schedule tasks
    */
   public WeeklyScheduleDailyWorker(
-      Map<DayOfWeek, List<IntervalScheduledTask>> schedule,
+      WeeklyScheduleKeeper weeklyScheduleKeeper,
       LocalDateTimeService localDateTimeService,
       IntervalScheduledTaskProcessor taskProcessor) {
-    this.schedule = schedule;
+    this.weeklyScheduleKeeper = weeklyScheduleKeeper;
     this.localDateTimeService = localDateTimeService;
     this.taskProcessor = taskProcessor;
     this.task = new ScheduledThreadPoolExecutor(1);
@@ -54,7 +52,7 @@ public class WeeklyScheduleDailyWorker {
    *
    * <p>Tasks are started daily at midnight of the time the application is running in.
    */
-  public void start() {
+  public void run() {
     task.schedule(getTask(), 0, TimeUnit.SECONDS);
     task.scheduleAtFixedRate(
         getTask(), getNanoTimeToMidnight(), TimeUnit.DAYS.toNanos(1L), TimeUnit.NANOSECONDS);
@@ -72,8 +70,7 @@ public class WeeklyScheduleDailyWorker {
   private Runnable getTask() {
     return () -> {
       DayOfWeek dayOfWeekNow = localDateTimeService.dateNow().getDayOfWeek();
-      List<IntervalScheduledTask> listOfTasks =
-          schedule.getOrDefault(dayOfWeekNow, new ArrayList<>());
+      List<IntervalScheduledTask> listOfTasks = weeklyScheduleKeeper.getTaskScheduled(dayOfWeekNow);
       listOfTasks.forEach(taskProcessor::schedule);
     };
   }

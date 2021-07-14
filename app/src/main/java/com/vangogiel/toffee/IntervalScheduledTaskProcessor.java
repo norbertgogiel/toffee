@@ -48,20 +48,6 @@ public class IntervalScheduledTaskProcessor {
   }
 
   /**
-   * Tries to schedule a task, provided it is a valid method to be scheduled.
-   *
-   * <p>It delegates raw method to be wrapped in an object and delegated to another method to be
-   * scheduled. If a method is not appropriately annotated, as per check, the method is ignored and
-   * not processed.
-   *
-   * @param source the source class of the method
-   * @param method the method in subject
-   */
-  public void tryScheduleTask(Class<?> source, Method method) {
-    if (isMethodAValidSchedule(method)) schedule(processRawAndWrap(source, method));
-  }
-
-  /**
    * Consumes raw method and delegates annotation processing to other dependencies.
    *
    * <p>The method is wrapped in a runnable class {@code ScheduledTaskRunnable} and all together
@@ -100,7 +86,7 @@ public class IntervalScheduledTaskProcessor {
    * @param method method to be verified
    * @return a {@code boolean} indicating whether a method is annotated correctly
    */
-  private boolean isMethodAValidSchedule(Method method) {
+  public boolean isMethodAValidSchedule(Method method) {
     return method.isAnnotationPresent(ScheduledFrom.class)
         && method.isAnnotationPresent(ScheduledUntil.class);
   }
