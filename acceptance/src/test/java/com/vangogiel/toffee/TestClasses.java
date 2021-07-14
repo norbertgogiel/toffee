@@ -139,7 +139,18 @@ public class TestClasses {
         @ScheduledFrom(time = "00:00:00")
         @ScheduledUntil(time = "23:59:59")
         @EverySecond
-        @Weekdays(days = "Mon/Wed/Fri")
+        @Weekdays(days = "Mon,Wed,Fri")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunOnMultipleDays {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Tue,Wed,Fri")
         public void getSimpleSchedule() {
             ContextSetupSteps.atomicInteger.getAndIncrement();
         }

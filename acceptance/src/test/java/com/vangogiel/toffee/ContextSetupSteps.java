@@ -88,6 +88,12 @@ public class ContextSetupSteps {
         toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnMultipleDaysAhead.class);
     }
 
+    @Given("a task scheduled to run on Tue, Wed, Fri")
+    public void defaultContextTaskOnMultipleDaysTodayAndAhead() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnMultipleDays.class);
+    }
+
     @Given("I set today to be Tuesday")
     public void setTodayToMonday() {
         clock = Clock.fixed(Instant.parse("2021-06-15T01:01:01.01Z"), ZoneId.of("UTC"));
