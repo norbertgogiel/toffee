@@ -122,4 +122,15 @@ public class TestClasses {
             ContextSetupSteps.atomicInteger.getAndIncrement();
         }
     }
+
+    static class IntervalScheduledToRunOnTuesdays {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Tue")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
 }
