@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 public class TestWeeklyScheduleKeeper {
 
   @Mock private WeekdayAnnotationProcessor mockWeekdayAnnotationProcessor;
-  @Mock private IntervalScheduledTaskProcessor mockTaskProcessor;
   @Mock private Runnable mockRunnable;
   @Mock private IntervalScheduledTime mockTime;
   private final Set<DayOfWeek> setDays = new HashSet<>();
@@ -26,23 +25,24 @@ public class TestWeeklyScheduleKeeper {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    subject = new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor, mockTaskProcessor);
-    Mockito.when(mockTaskProcessor.isMethodAValidSchedule(Mockito.any())).thenReturn(true);
+    subject = new WeeklyScheduleKeeper(mockWeekdayAnnotationProcessor);
   }
 
   @Test
   public void testPlanInMondayTask() throws NoSuchMethodException {
     prepareAnnotationTaskProcessor(DayOfWeek.MONDAY);
-    prepareTaskProcessor();
-    subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testMonday"));
+    IntervalScheduledTask task =
+        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
+    subject.planIn(task, WeeklySchedules.class.getMethod("testMonday"));
     assertWeeklyEntries(1, 0, 0, 0, 0, 0, 0);
   }
 
   @Test
   public void testPlanInMixedDays() throws NoSuchMethodException {
     prepareAnnotationTaskProcessor(DayOfWeek.MONDAY, DayOfWeek.SATURDAY);
-    prepareTaskProcessor();
-    subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testMixedDays"));
+    IntervalScheduledTask task =
+        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
+    subject.planIn(task, WeeklySchedules.class.getMethod("testMixedDays"));
     assertWeeklyEntries(1, 0, 0, 0, 0, 1, 0);
   }
 
@@ -56,8 +56,9 @@ public class TestWeeklyScheduleKeeper {
         DayOfWeek.FRIDAY,
         DayOfWeek.SATURDAY,
         DayOfWeek.SUNDAY);
-    prepareTaskProcessor();
-    subject.planIn(WeeklySchedules.class, WeeklySchedules.class.getMethod("testAllDaysOfWeek"));
+    IntervalScheduledTask task =
+        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
+    subject.planIn(task, WeeklySchedules.class.getMethod("testAllDaysOfWeek"));
     assertWeeklyEntries(1, 1, 1, 1, 1, 1, 1);
   }
 
@@ -75,13 +76,6 @@ public class TestWeeklyScheduleKeeper {
   private void prepareAnnotationTaskProcessor(DayOfWeek... dayOfWeeks) {
     setDays.addAll(Arrays.asList(dayOfWeeks));
     Mockito.when(mockWeekdayAnnotationProcessor.process(Mockito.any())).thenReturn(setDays);
-  }
-
-  private void prepareTaskProcessor() {
-    IntervalScheduledTask task =
-        new IntervalScheduledTask(mockRunnable, mockTime, 0L, TimeUnit.SECONDS);
-    Mockito.when(mockTaskProcessor.processRawAndWrap(Mockito.any(), Mockito.any()))
-        .thenReturn(task);
   }
 
   private void assertWeeklyEntries(

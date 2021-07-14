@@ -37,40 +37,30 @@ public class WeeklyScheduleKeeper {
       };
 
   private final WeekdayAnnotationProcessor weekdayAnnotationProcessor;
-  private final IntervalScheduledTaskProcessor taskProcessor;
 
   /**
    * Create a new WeeklyScheduleKeeper.
    *
    * @param weekdayAnnotationProcessor to convert raw annotation to meaningful object
-   * @param taskProcessor to schedule tasks
    */
-  public WeeklyScheduleKeeper(
-      WeekdayAnnotationProcessor weekdayAnnotationProcessor,
-      IntervalScheduledTaskProcessor taskProcessor) {
+  public WeeklyScheduleKeeper(WeekdayAnnotationProcessor weekdayAnnotationProcessor) {
     this.weekdayAnnotationProcessor = weekdayAnnotationProcessor;
-    this.taskProcessor = taskProcessor;
   }
 
   /**
-   * Allows to create a wrapped task and schedule it appropriately.
-   *
-   * <p>The scheduling depends on the annotation provided.
+   * Allows to schedule a task according to annotation styling with the provided method.
    *
    * <p>If annotation is provided the task is scheduled as prescribed by the annotation. If the
    * annotation isn't provided them the tasks is scheduled for all the days in the week.
    *
-   * @param source class to be able to create a task
+   * @param task to be scheduled
    * @param method that is to be runs from the class
    */
-  public void planIn(Class<?> source, Method method) {
-    if (taskProcessor.isMethodAValidSchedule(method)) {
-      IntervalScheduledTask task = taskProcessor.processRawAndWrap(source, method);
-      if (method.isAnnotationPresent(Weekdays.class)) {
-        scheduleForTheDay(method, task);
-      } else {
-        schedule.forEach((day, tasks) -> tasks.add(task));
-      }
+  public void planIn(IntervalScheduledTask task, Method method) {
+    if (method.isAnnotationPresent(Weekdays.class)) {
+      scheduleForTheDay(method, task);
+    } else {
+      schedule.forEach((day, tasks) -> tasks.add(task));
     }
   }
 
