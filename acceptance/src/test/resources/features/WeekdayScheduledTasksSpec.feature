@@ -1,6 +1,5 @@
 Feature: Weekday Scheduled Tasks
-
-  @Ignore
+  
   Scenario: Task is setup to run all the time on Monday
     Given I set today to be Tuesday
     And a task scheduled to run on Mondays
