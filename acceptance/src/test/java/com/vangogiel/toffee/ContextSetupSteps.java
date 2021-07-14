@@ -1,7 +1,11 @@
 package com.vangogiel.toffee;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -11,6 +15,12 @@ public class ContextSetupSteps {
 
     public static AtomicInteger atomicInteger = new AtomicInteger();
     public static ToffeeContext toffeeContext;
+    private Clock clock;
+
+    @After
+    public void afterEach() {
+        toffeeContext.shutDownAllTasksNow();
+    }
 
     @Given("a task set to run non-stop with every second custom annotation")
     public void basicContextWithContinuousTask() {
@@ -58,6 +68,35 @@ public class ContextSetupSteps {
     public void basicContextFutureTaskOverMidnight() {
         atomicInteger.set(0);
         toffeeContext = new ToffeeContext(TestClasses.IntervalScheduledToRunInTheFutureOverMidnight.class);
+    }
+
+    @Given("a task scheduled to run on Mondays")
+    public void defaultContextTaskOnMondays() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnMondays.class);
+    }
+
+    @Given("a task scheduled to run on Tuesdays")
+    public void defaultContextTaskOnTuesdays() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnTuesdays.class);
+    }
+
+    @Given("a task scheduled to run on Mon, Wed, Fri")
+    public void defaultContextTaskOnMultipleDays() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnMultipleDaysAhead.class);
+    }
+
+    @Given("a task scheduled to run on Tue, Wed, Fri")
+    public void defaultContextTaskOnMultipleDaysTodayAndAhead() {
+        atomicInteger.set(0);
+        toffeeContext = new ToffeeContext(clock, TestClasses.IntervalScheduledToRunOnMultipleDays.class);
+    }
+
+    @Given("I set today to be Tuesday")
+    public void setTodayToMonday() {
+        clock = Clock.fixed(Instant.parse("2021-06-15T01:01:01.01Z"), ZoneId.of("UTC"));
     }
 
     @Given("two tasks scheduled to run all the time at different rates")

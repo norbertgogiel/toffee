@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 public class IntervalScheduledTaskProcessor {
 
   private final List<IntervalScheduledTaskAgent> registeredAgents;
-  private final TimePeriodAnnotationProcessor timePeriodAnnotationProcessor;
-  private final IntervalScheduledAnnotationProcessor delayCalculator;
+  private final AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor;
+  private final AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator;
   private final IntervalScheduledTaskAgentProvider agentProvider;
 
   /**
@@ -38,27 +38,13 @@ public class IntervalScheduledTaskProcessor {
    */
   public IntervalScheduledTaskProcessor(
       List<IntervalScheduledTaskAgent> registeredAgents,
-      TimePeriodAnnotationProcessor timePeriodAnnotationProcessor,
-      IntervalScheduledAnnotationProcessor delayCalculator,
+      AnnotationProcessor<Method, Long> timePeriodAnnotationProcessor,
+      AnnotationProcessor<Method, IntervalScheduledTime> delayCalculator,
       IntervalScheduledTaskAgentProvider agentProvider) {
     this.registeredAgents = registeredAgents;
     this.timePeriodAnnotationProcessor = timePeriodAnnotationProcessor;
     this.delayCalculator = delayCalculator;
     this.agentProvider = agentProvider;
-  }
-
-  /**
-   * Tries to schedule a task, provided it is a valid method to be scheduled.
-   *
-   * <p>It delegates raw method to be wrapped in an object and delegated to another method to be
-   * scheduled. If a method is not appropriately annotated, as per check, the method is ignored and
-   * not processed.
-   *
-   * @param source the source class of the method
-   * @param method the method in subject
-   */
-  public void tryScheduleTask(Class<?> source, Method method) {
-    if (isMethodAValidSchedule(method)) schedule(processRawAndWrap(source, method));
   }
 
   /**
@@ -73,7 +59,7 @@ public class IntervalScheduledTaskProcessor {
    * @throws IllegalFormatPrecisionException if the time in the annotation is of incorrect format
    * @throws java.time.DateTimeException if the time is out of its relative time bounds
    */
-  private IntervalScheduledTask processRawAndWrap(Class<?> source, Method method) {
+  public IntervalScheduledTask processRawAndWrap(Class<?> source, Method method) {
     long period = timePeriodAnnotationProcessor.process(method);
     IntervalScheduledTime delay = delayCalculator.process(method);
     Runnable runnable = new ScheduledTaskRunnable(source, method);
@@ -88,7 +74,7 @@ public class IntervalScheduledTaskProcessor {
    * @throws NullPointerException if the command in the task or unit is null
    * @throws IllegalArgumentException if scheduled period is less than or equal to zero
    */
-  private void schedule(IntervalScheduledTask task) {
+  public void schedule(IntervalScheduledTask task) {
     IntervalScheduledTaskAgent agent = agentProvider.get();
     registeredAgents.add(agent);
     agent.submit(task);
@@ -100,7 +86,7 @@ public class IntervalScheduledTaskProcessor {
    * @param method method to be verified
    * @return a {@code boolean} indicating whether a method is annotated correctly
    */
-  private boolean isMethodAValidSchedule(Method method) {
+  public boolean isMethodAValidSchedule(Method method) {
     return method.isAnnotationPresent(ScheduledFrom.class)
         && method.isAnnotationPresent(ScheduledUntil.class);
   }

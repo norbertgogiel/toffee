@@ -6,6 +6,7 @@ import com.vangogiel.toffee.annotations.EveryMinute;
 import com.vangogiel.toffee.annotations.EverySecond;
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
+import com.vangogiel.toffee.annotations.Weekdays;
 
 import java.util.concurrent.TimeUnit;
 
@@ -106,6 +107,50 @@ public class TestClasses {
 
         @ScheduledFrom(time = "23:58:59")
         @ScheduledUntil(time = "00:00:10")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunOnMondays {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Mon")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunOnTuesdays {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Tue")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunOnMultipleDaysAhead {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Mon,Wed,Fri")
+        public void getSimpleSchedule() {
+            ContextSetupSteps.atomicInteger.getAndIncrement();
+        }
+    }
+
+    static class IntervalScheduledToRunOnMultipleDays {
+
+        @ScheduledFrom(time = "00:00:00")
+        @ScheduledUntil(time = "23:59:59")
+        @EverySecond
+        @Weekdays(days = "Tue,Wed,Fri")
         public void getSimpleSchedule() {
             ContextSetupSteps.atomicInteger.getAndIncrement();
         }

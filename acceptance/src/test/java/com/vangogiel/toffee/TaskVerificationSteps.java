@@ -23,12 +23,11 @@ public class TaskVerificationSteps {
 
     @Then("I verify the task was set up")
     public void verifyTaskIsSetUp() {
-        assertEquals(1, ContextSetupSteps.toffeeContext.getTotalCorePoolSize());
-    }
+        waitAssertNumerousTasksSetUp(1);}
 
     @Then("I verify {int} tasks were set up")
-    public void verifyNumerousTasksAreSetUp(int count) {
-        assertEquals(count, ContextSetupSteps.toffeeContext.getTotalCorePoolSize());
+    public void verifyNumerousTasksAreSetUp(int expected) {
+        waitAssertNumerousTasksSetUp(expected);
     }
 
     @And("I verify the tasks have run {int} times in total")
@@ -39,5 +38,15 @@ public class TaskVerificationSteps {
     @And("I shutdown all tasks now")
     public void shutDownAllTasksNow() {
         ContextSetupSteps.toffeeContext.shutDownAllTasksNow();
+    }
+
+    private void waitAssertNumerousTasksSetUp(int expected) {
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < 2000) {
+            if (expected == ContextSetupSteps.toffeeContext.getTotalCorePoolSize()) {
+                return;
+            }
+        }
+        throw new AssertionError("Timed out wait assertion. Expected: " + expected + " actual: " + ContextSetupSteps.toffeeContext.getTotalCorePoolSize());
     }
 }

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.vangogiel.toffee.annotations.ScheduledFrom;
 import com.vangogiel.toffee.annotations.ScheduledUntil;
 import java.io.IOException;
+import java.time.Clock;
 import org.junit.Test;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 
@@ -16,6 +17,11 @@ public class TestToffeeContext {
   @Test
   public void testDefaultConstructor() {
     assertDoesNotThrow((ThrowingSupplier<ToffeeContext>) ToffeeContext::new);
+  }
+
+  @Test
+  public void testConstructorWithClock() {
+    assertDoesNotThrow(() -> new ToffeeContext(Clock.systemDefaultZone()));
   }
 
   @Test
@@ -55,8 +61,9 @@ public class TestToffeeContext {
   }
 
   @Test
-  public void testShutDownAllTasksNow() {
+  public void testShutDownAllTasksNow() throws InterruptedException {
     ToffeeContext subject = new ToffeeContext(IntervalScheduledTestClass.class);
+    Thread.sleep(2000);
     assertEquals(1, subject.getTotalCorePoolSize());
     subject.shutDownAllTasksNow();
     assertEquals(0, subject.getTotalCorePoolSize());

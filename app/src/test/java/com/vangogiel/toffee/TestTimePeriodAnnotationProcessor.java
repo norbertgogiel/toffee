@@ -6,6 +6,7 @@ import com.vangogiel.toffee.annotations.Every;
 import com.vangogiel.toffee.annotations.EveryHour;
 import com.vangogiel.toffee.annotations.EveryMinute;
 import com.vangogiel.toffee.annotations.EverySecond;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class TestTimePeriodAnnotationProcessor {
 
   @Test
   public void testScheduledAtEverySecond() throws NoSuchMethodException {
-    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+    AnnotationProcessor<Method, Long> subject = new TimePeriodAnnotationProcessor();
 
     long result =
         subject.process(ScheduledMethodAnnotatedAtEverySecond.class.getMethod("testRunnable"));
@@ -31,7 +32,7 @@ public class TestTimePeriodAnnotationProcessor {
 
   @Test
   public void testIScheduledAtEveryMinute() throws NoSuchMethodException {
-    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+    AnnotationProcessor<Method, Long> subject = new TimePeriodAnnotationProcessor();
 
     long result =
         subject.process(ScheduledMethodAnnotatedAtEveryMinute.class.getMethod("testRunnable"));
@@ -41,7 +42,7 @@ public class TestTimePeriodAnnotationProcessor {
 
   @Test
   public void testScheduledAtVeryHour() throws NoSuchMethodException {
-    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+    AnnotationProcessor<Method, Long> subject = new TimePeriodAnnotationProcessor();
 
     long result =
         subject.process(ScheduledMethodAnnotatedAtEveryHour.class.getMethod("testRunnable"));
@@ -51,7 +52,7 @@ public class TestTimePeriodAnnotationProcessor {
 
   @Test
   public void testScheduledAtVery2Seconds() throws NoSuchMethodException {
-    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+    AnnotationProcessor<Method, Long> subject = new TimePeriodAnnotationProcessor();
 
     long result =
         subject.process(ScheduledMethodAnnotatedAtEvery2Seconds.class.getMethod("testRunnable"));
@@ -61,7 +62,7 @@ public class TestTimePeriodAnnotationProcessor {
 
   @Test
   public void testNoAnnotation() throws NoSuchMethodException {
-    TimePeriodAnnotationProcessor subject = new TimePeriodAnnotationProcessor();
+    AnnotationProcessor<Method, Long> subject = new TimePeriodAnnotationProcessor();
 
     long result = subject.process(NotAnnotated.class.getMethod("testRunnable"));
 

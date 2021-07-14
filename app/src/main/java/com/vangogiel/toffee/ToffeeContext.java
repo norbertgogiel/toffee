@@ -1,9 +1,12 @@
 package com.vangogiel.toffee;
 
+import java.lang.reflect.Method;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This is a main application entry-point initialising application context at constructor level.
@@ -20,7 +23,9 @@ import java.util.List;
 public class ToffeeContext {
 
   private final List<IntervalScheduledTaskAgent> registeredAgents = new ArrayList<>();
-  private final IntervalScheduledTaskProcessor intervalScheduledTaskProcessor;
+  private WeeklyScheduleKeeper weeklyScheduleKeeper;
+  private WeeklyScheduleDailyWorker weeklyScheduleDailyWorker;
+  private IntervalScheduledTaskProcessor taskProcessor;
 
   /**
    * Create a new ToffeeContext.
@@ -28,17 +33,21 @@ public class ToffeeContext {
    * @param sources as vararg classes containing annotated scheduled methods
    */
   public ToffeeContext(Class<?>... sources) {
-    TimeParser timeParser = new TimeParser();
-    TimePeriodAnnotationProcessor timePeriodAnnotationProcessor =
-        new TimePeriodAnnotationProcessor();
-    LocalTimeService localTimeService = new LocalTimeService();
-    IntervalScheduledAnnotationProcessor delayCalculator =
-        new IntervalScheduledAnnotationProcessor(timeParser, localTimeService);
-    IntervalScheduledTaskAgentProvider agentProvider = new IntervalScheduledTaskAgentProvider();
-    intervalScheduledTaskProcessor =
-        new IntervalScheduledTaskProcessor(
-            registeredAgents, timePeriodAnnotationProcessor, delayCalculator, agentProvider);
+    instantiateContext();
     processSources(sources);
+    weeklyScheduleDailyWorker.run();
+  }
+
+  /**
+   * Create a new ToffeeContext with {@code Clock} as dependency.
+   *
+   * @param clock that will be used to schedule run the context
+   * @param sources as vararg classes containing annotated scheduled methods
+   */
+  public ToffeeContext(Clock clock, Class<?>... sources) {
+    instantiateContext(clock);
+    processSources(sources);
+    weeklyScheduleDailyWorker.run();
   }
 
   /**
@@ -47,7 +56,8 @@ public class ToffeeContext {
    * @return value as {@code int}
    */
   public int getTotalCorePoolSize() {
-    return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum();
+    List<IntervalScheduledTaskAgent> cTasks = new ArrayList<>(registeredAgents);
+    return cTasks.stream().mapToInt(IntervalScheduledTaskAgent::getCorePoolSize).sum();
   }
 
   /**
@@ -56,7 +66,8 @@ public class ToffeeContext {
    * @return value as {@code int}
    */
   public int getTotalCurrentPoolSize() {
-    return registeredAgents.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
+    List<IntervalScheduledTaskAgent> cTasks = new ArrayList<>(registeredAgents);
+    return cTasks.stream().mapToInt(IntervalScheduledTaskAgent::getCurrentPoolSize).sum();
   }
 
   /**
@@ -85,7 +96,7 @@ public class ToffeeContext {
 
   /**
    * Processes each class by delegating the task of scheduling to {@link
-   * IntervalScheduledTaskProcessor}.
+   * com.vangogiel.toffee.WeeklyScheduleKeeper}.
    *
    * <p>It asserts whether the class is a null or not before processing. It then streams through all
    * the methods in the class and submits each one of them to schedule without assessing its
@@ -96,8 +107,23 @@ public class ToffeeContext {
    */
   private void processSource(Class<?> source) {
     assertNotNull(source);
-    Arrays.stream(source.getMethods())
-        .forEach(method -> intervalScheduledTaskProcessor.tryScheduleTask(source, method));
+    Arrays.stream(source.getMethods()).forEach(processMethod(source));
+  }
+
+  /**
+   * Consumer method to provide an operation that consumes the source, the method and wraps up the
+   * information as an encapsulated tasks and delegates to schedule it.
+   *
+   * @param source class from which the task is to be scheduled.
+   * @return the Consumer
+   */
+  private Consumer<Method> processMethod(Class<?> source) {
+    return (method) -> {
+      if (taskProcessor.isMethodAValidSchedule(method)) {
+        IntervalScheduledTask task = taskProcessor.processRawAndWrap(source, method);
+        weeklyScheduleKeeper.planIn(task, method);
+      }
+    };
   }
 
   /**
@@ -110,5 +136,46 @@ public class ToffeeContext {
    */
   private static void assertNotNull(Object object) {
     if (object == null) throw new IllegalArgumentException("Object must not be null");
+  }
+
+  /** Create Toffee Context. */
+  private void instantiateContext() {
+    instantiateCoreContext(new LocalDateTimeService());
+  }
+
+  /**
+   * Create Toffee Context with custom {@code Clock}.
+   *
+   * @param clock to be used for the context
+   */
+  private void instantiateContext(Clock clock) {
+    instantiateCoreContext(new LocalDateTimeService(clock));
+  }
+
+  /**
+   * Instantiate core Toffee Context.
+   *
+   * @param localDateTimeService to be used for the context
+   */
+  private void instantiateCoreContext(LocalDateTimeService localDateTimeService) {
+    createTaskProcessor(localDateTimeService);
+    weeklyScheduleKeeper = new WeeklyScheduleKeeper(new WeekdayAnnotationProcessor());
+    weeklyScheduleDailyWorker =
+        new WeeklyScheduleDailyWorker(weeklyScheduleKeeper, localDateTimeService, taskProcessor);
+  }
+
+  /**
+   * Create an instance of {@code IntervalScheduledTaskProcessor}.
+   *
+   * @param localDateTimeService to be used for task processor
+   * @return instance of {@code IntervalScheduledTaskProcessor}.
+   */
+  private void createTaskProcessor(LocalDateTimeService localDateTimeService) {
+    taskProcessor =
+        new IntervalScheduledTaskProcessor(
+            registeredAgents,
+            new TimePeriodAnnotationProcessor(),
+            new IntervalScheduledAnnotationProcessor(new TimeParser(), localDateTimeService),
+            new IntervalScheduledTaskAgentProvider());
   }
 }
