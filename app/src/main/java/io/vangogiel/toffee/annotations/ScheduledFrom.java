@@ -1,0 +1,33 @@
+package io.vangogiel.toffee.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Annotation defining the time from which a method will be scheduled.
+ *
+ * <p>Allows to specify a scheduled from time for a potential scheduled candidate. The time format
+ * should be of "HH:mm:ss", e.g.:
+ *
+ * <ul>
+ *   <li>@ScheduledFrom(time="01:01:01")
+ * </ul>
+ *
+ * @author Norbert Gogiel
+ * @since 1.0
+ * @see io.vangogiel.toffee.IntervalScheduledAnnotationProcessor
+ * @see io.vangogiel.toffee.IntervalScheduledTaskProcessor
+ */
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ScheduledFrom {
+
+  /**
+   * Defines the time from in format of "HH:mm:ss" as {@code String}.
+   *
+   * @return the time as {@code String}
+   */
+  String time() default "";
+}

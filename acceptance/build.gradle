@@ -18,7 +18,7 @@ task cucumber {
         javaexec {
             main = "io.cucumber.core.cli.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-            args = ['--plugin', 'pretty', '--glue', 'com.vangogiel.toffee', 'src/test/resources', '--tags', 'not @Ignore']
+            args = ['--plugin', 'pretty', '--glue', 'io.vangogiel.toffee', 'src/test/resources', '--tags', 'not @Ignore']
         }
     }
 }
