@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/vangogiel/toffee/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/vangogiel/toffee/actions/workflows/build.yml)
 [![License](http://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](http://maven-badges.herokuapp.com/maven-central/io.vangogiel.toffee/toffee/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.vangogiel.toffee/toffee)
 
 
 Systems running backend application need to be able to run multiple parallel tasks without much 
